@@ -22,6 +22,6 @@ PL> (P & Q) | !G
 	T & F & F & F & T & T \\
 	\hline
 \end{tabular}
-PL> ^C
+PL> ^D
 $ 
 ```
