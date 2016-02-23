@@ -2,6 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 from collections import OrderedDict
 from ordered_set import OrderedSet
+import readline
 
 class PL_Exp(object): 
 	def __eq__(self, other):
@@ -100,7 +101,7 @@ class PL_Bicond_Exp(PL_Bin_Exp):
 
 def make_latex_table(table):
 	num_cols = len(table)
-	num_rows = len(table.values()[0])/2 if len(table) > 0 else 1
+	num_rows = len(table.values()[0]) if len(table) > 0 else 1
 	s = "\\begin{tabular}{|" + "c|" * num_cols + "}\n\t\\hline\n"
 	s += "\t" + reduce(lambda s1, s2: s1 + s2, map(lambda pl: "$" + pl.latex_str() + "$" + " & ", table.keys()))
 	s = s[:-2] + "\\\\\n\t\\hline\n"
@@ -122,9 +123,9 @@ tokens = (
     'COMMA'
  )
 
-t_PL_AND = r'\&|\\wedge'
-t_PL_OR = r'\||\\vee'
-t_PL_NEG = r'\!|\\neg'
+t_PL_AND = r'\&|\\wedge|and'
+t_PL_OR = r'\||\\vee|or'
+t_PL_NEG = r'\!|\\neg|not'
 t_PL_COND = r'->|\\supset'
 t_PL_BICOND = r'=|\\leftrightarrow'
 t_PL_VAR = r'[A-Z]'
