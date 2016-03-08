@@ -145,16 +145,26 @@ class PL_Bicond_Exp(PL_Bin_Exp):
 		return lr[0] == lr[1]
 	def seman_gen(self, tf):
 		yield "$V_I({0})$ = {1}".format(self.latex_str(), tf)
-		left_final_gen0, left_final_gen1 = None, None
-		righ_generator0, righ_generator1 = self.right.seman_gen(0), self.right.seman_gen(1)
-		right_gen_init0, right_gen_init1 = righ_generator0.next(), righ_generator1.next()
-		for left_gen0, left_gen1 in zip(self.left.seman_gen(0), self.left.seman_gen(1)):
-			yield "[[{0} and {1}] or [{2} and {3}]]".format(left_gen0, right_gen_init0, 
-														left_gen1, right_gen_init1)
-			left_final_gen0, left_final_gen1 = left_gen0, left_gen1
-		for right_gen0, right_gen1 in zip(self.right.seman_gen(0), self.right.seman_gen(1)):
-			yield "[[{0} and {1}] or [{2} and {3}]]".format(left_final_gen0, right_gen0, 
-														left_final_gen1, right_gen1)
+		if isinstance(self.left, PL_Var_Exp) and isinstance(self.right, PL_Var_Exp):
+			for left_gen0, right_gen0, left_gen1, right_gen1  in zip(	  
+																		self.left.seman_gen(0), 
+																		self.right.seman_gen(0),
+																		self.left.seman_gen(1), 
+																		self.right.seman_gen(1)
+										    						):
+				yield "[[{0} and {1}] or [{2} and {3}]]".format(left_gen0, right_gen0, 
+																left_gen1, right_gen1)
+		else:
+			left_final_gen0, left_final_gen1 = None, None
+			righ_generator0, righ_generator1 = self.right.seman_gen(0), self.right.seman_gen(1)
+			right_gen_init0, right_gen_init1 = righ_generator0.next(), righ_generator1.next()
+			for left_gen0, left_gen1 in zip(self.left.seman_gen(0), self.left.seman_gen(1)):
+				yield "[[{0} and {1}] or [{2} and {3}]]".format(left_gen0, right_gen_init0, 
+															left_gen1, right_gen_init1)
+				left_final_gen0, left_final_gen1 = left_gen0, left_gen1
+			for right_gen0, right_gen1 in zip(self.right.seman_gen(0), self.right.seman_gen(1)):
+				yield "[[{0} and {1}] or [{2} and {3}]]".format(left_final_gen0, right_gen0, 
+															left_final_gen1, right_gen1)
 
 def make_latex_table(table):
 	num_cols = len(table)
