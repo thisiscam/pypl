@@ -5,9 +5,9 @@ _tabversion = '3.8'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'D14A95FA7125B8ED67FEF71D87D8D17D'
+_lr_signature = '38C9DB4398A11734FFC162AD617BBE23'
     
-_lr_action_items = {'RPAREN':([2,11,12,13,15,16,17,18,],[-10,-8,18,-4,-7,-6,-5,-9,]),'PL_AND':([2,3,11,12,13,15,16,17,18,],[-10,6,-8,6,-4,-7,-6,-5,-9,]),'COMMA':([2,3,11,13,15,16,17,18,],[-10,7,-8,-4,-7,-6,-5,-9,]),'LPAREN':([0,4,5,6,7,8,9,10,],[5,5,5,5,5,5,5,5,]),'PL_BICOND':([2,3,11,12,13,15,16,17,18,],[-10,8,-8,8,8,-7,-6,8,-9,]),'PL_VAR':([0,4,5,6,7,8,9,10,],[2,2,2,2,2,2,2,2,]),'PL_NEG':([0,4,5,6,7,8,9,10,],[4,4,4,4,4,4,4,4,]),'PL_COND':([2,3,11,12,13,15,16,17,18,],[-10,9,-8,9,9,-7,-6,9,-9,]),'PL_OR':([2,3,11,12,13,15,16,17,18,],[-10,10,-8,10,-4,-7,-6,-5,-9,]),'$end':([0,1,2,3,7,11,13,14,15,16,17,18,],[-3,0,-10,-1,-3,-8,-4,-2,-7,-6,-5,-9,]),}
+_lr_action_items = {'RPAREN':([8,15,16,17,19,20,21,22,],[-12,-10,22,-6,-9,-8,-7,-11,]),'CMD_SEMANTIC_DERIV':([0,],[1,]),'PL_AND':([5,8,15,16,17,19,20,21,22,],[10,-12,-10,10,-6,-9,-8,-7,-11,]),'COMMA':([5,8,15,17,19,20,21,22,],[11,-12,-10,-6,-9,-8,-7,-11,]),'LPAREN':([1,3,6,7,10,11,12,13,14,],[7,7,7,7,7,7,7,7,7,]),'PL_BICOND':([5,8,15,16,17,19,20,21,22,],[12,-12,-10,12,12,-9,-8,12,-11,]),'PL_VAR':([1,3,6,7,10,11,12,13,14,],[8,8,8,8,8,8,8,8,8,]),'PL_NEG':([1,3,6,7,10,11,12,13,14,],[6,6,6,6,6,6,6,6,6,]),'CMD_LATEX_TABLE':([0,],[3,]),'PL_COND':([5,8,15,16,17,19,20,21,22,],[13,-12,-10,13,13,-9,-8,13,-11,]),'PL_OR':([5,8,15,16,17,19,20,21,22,],[14,-12,-10,14,-6,-9,-8,-7,-11,]),'$end':([0,2,4,5,8,9,15,17,18,19,20,21,22,],[-1,0,-3,-4,-12,-2,-10,-6,-5,-9,-8,-7,-11,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'exp':([0,4,5,6,7,8,9,10,],[3,11,12,13,3,15,16,17,]),'statement':([0,7,],[1,14,]),}
+_lr_goto_items = {'command':([0,],[2,]),'exp':([1,3,6,7,10,11,12,13,14,],[5,5,15,16,17,5,19,20,21,]),'statement':([1,3,11,],[4,9,18,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -25,15 +25,17 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> statement","S'",1,None,None,None),
-  ('statement -> exp','statement',1,'p_statement_exp','pypl.py',158),
-  ('statement -> exp COMMA statement','statement',3,'p_statement_list','pypl.py',162),
-  ('statement -> <empty>','statement',0,'p_statement_empty','pypl.py',166),
-  ('exp -> exp PL_AND exp','exp',3,'p_exp_and','pypl.py',170),
-  ('exp -> exp PL_OR exp','exp',3,'p_exp_or','pypl.py',174),
-  ('exp -> exp PL_COND exp','exp',3,'p_exp_cond','pypl.py',178),
-  ('exp -> exp PL_BICOND exp','exp',3,'p_exp_bicond','pypl.py',182),
-  ('exp -> PL_NEG exp','exp',2,'p_exp_neg','pypl.py',186),
-  ('exp -> LPAREN exp RPAREN','exp',3,'p_exp_group','pypl.py',190),
-  ('exp -> PL_VAR','exp',1,'p_exp_var','pypl.py',194),
+  ("S' -> command","S'",1,None,None,None),
+  ('command -> <empty>','command',0,'p_empty_command','pypl.py',169),
+  ('command -> CMD_LATEX_TABLE statement','command',2,'p_command','pypl.py',174),
+  ('command -> CMD_SEMANTIC_DERIV statement','command',2,'p_command','pypl.py',175),
+  ('statement -> exp','statement',1,'p_statement_exp','pypl.py',180),
+  ('statement -> exp COMMA statement','statement',3,'p_statement_list','pypl.py',184),
+  ('exp -> exp PL_AND exp','exp',3,'p_exp_and','pypl.py',188),
+  ('exp -> exp PL_OR exp','exp',3,'p_exp_or','pypl.py',192),
+  ('exp -> exp PL_COND exp','exp',3,'p_exp_cond','pypl.py',196),
+  ('exp -> exp PL_BICOND exp','exp',3,'p_exp_bicond','pypl.py',200),
+  ('exp -> PL_NEG exp','exp',2,'p_exp_neg','pypl.py',204),
+  ('exp -> LPAREN exp RPAREN','exp',3,'p_exp_group','pypl.py',208),
+  ('exp -> PL_VAR','exp',1,'p_exp_var','pypl.py',212),
 ]
