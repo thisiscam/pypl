@@ -3,6 +3,7 @@ import ply.yacc as yacc
 from collections import OrderedDict
 from ordered_set import OrderedSet
 import readline
+import clipboard
 
 class PL_Exp(object): 
 	def __eq__(self, other):
@@ -289,11 +290,15 @@ def run_cmd(cmd, pl_tree_set):
 	if cmd == "CMD_LATEX_TABLE":
 		if pl_tree_set != None and len(pl_tree_set) != 0 :
 			table = pl_tree_set.make_table()
-			print make_latex_table(table)
+			s = make_latex_table(table)
+			print s
+			clipboard.copy(s)
 	elif cmd == "CMD_SEMANTIC_DERIV":
 		if pl_tree_set != None and len(pl_tree_set) == 1:
 			pl_tree = pl_tree_set[0]
-			print pl_tree.seman_derive()
+			s = pl_tree.seman_derive()
+			print s
+			clipboard.copy(s)
 	elif cmd == "CMD_EMPTY":
 		pass
 	else:
