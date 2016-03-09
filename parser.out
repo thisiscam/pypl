@@ -4,10 +4,10 @@ Grammar
 
 Rule 0     S' -> command
 Rule 1     command -> <empty>
-Rule 2     command -> CMD_LATEX_TABLE statement
-Rule 3     command -> CMD_SEMANTIC_DERIV statement
-Rule 4     statement -> exp
-Rule 5     statement -> exp COMMA statement
+Rule 2     command -> CMD_LATEX_TABLE exp_list
+Rule 3     command -> CMD_SEMANTIC_DERIV exp_list
+Rule 4     exp_list -> exp
+Rule 5     exp_list -> exp COMMA exp_list
 Rule 6     exp -> exp PL_AND exp
 Rule 7     exp -> exp PL_OR exp
 Rule 8     exp -> exp PL_COND exp
@@ -35,7 +35,7 @@ Nonterminals, with rules where they appear
 
 command              : 0
 exp                  : 4 5 6 6 7 7 8 8 9 9 10 11
-statement            : 2 3 5
+exp_list             : 2 3 5
 
 Parsing method: LALR
 
@@ -43,8 +43,8 @@ state 0
 
     (0) S' -> . command
     (1) command -> .
-    (2) command -> . CMD_LATEX_TABLE statement
-    (3) command -> . CMD_SEMANTIC_DERIV statement
+    (2) command -> . CMD_LATEX_TABLE exp_list
+    (3) command -> . CMD_SEMANTIC_DERIV exp_list
 
     $end            reduce using rule 1 (command -> .)
     CMD_LATEX_TABLE shift and go to state 3
@@ -54,9 +54,9 @@ state 0
 
 state 1
 
-    (3) command -> CMD_SEMANTIC_DERIV . statement
-    (4) statement -> . exp
-    (5) statement -> . exp COMMA statement
+    (3) command -> CMD_SEMANTIC_DERIV . exp_list
+    (4) exp_list -> . exp
+    (5) exp_list -> . exp COMMA exp_list
     (6) exp -> . exp PL_AND exp
     (7) exp -> . exp PL_OR exp
     (8) exp -> . exp PL_COND exp
@@ -65,12 +65,12 @@ state 1
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
-    exp                            shift and go to state 5
-    statement                      shift and go to state 4
+    exp_list                       shift and go to state 4
+    exp                            shift and go to state 6
 
 state 2
 
@@ -80,9 +80,9 @@ state 2
 
 state 3
 
-    (2) command -> CMD_LATEX_TABLE . statement
-    (4) statement -> . exp
-    (5) statement -> . exp COMMA statement
+    (2) command -> CMD_LATEX_TABLE . exp_list
+    (4) exp_list -> . exp
+    (5) exp_list -> . exp COMMA exp_list
     (6) exp -> . exp PL_AND exp
     (7) exp -> . exp PL_OR exp
     (8) exp -> . exp PL_COND exp
@@ -91,55 +91,21 @@ state 3
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
-    exp                            shift and go to state 5
-    statement                      shift and go to state 9
+    exp_list                       shift and go to state 9
+    exp                            shift and go to state 6
 
 state 4
 
-    (3) command -> CMD_SEMANTIC_DERIV statement .
+    (3) command -> CMD_SEMANTIC_DERIV exp_list .
 
-    $end            reduce using rule 3 (command -> CMD_SEMANTIC_DERIV statement .)
+    $end            reduce using rule 3 (command -> CMD_SEMANTIC_DERIV exp_list .)
 
 
 state 5
-
-    (4) statement -> exp .
-    (5) statement -> exp . COMMA statement
-    (6) exp -> exp . PL_AND exp
-    (7) exp -> exp . PL_OR exp
-    (8) exp -> exp . PL_COND exp
-    (9) exp -> exp . PL_BICOND exp
-
-    $end            reduce using rule 4 (statement -> exp .)
-    COMMA           shift and go to state 11
-    PL_AND          shift and go to state 10
-    PL_OR           shift and go to state 14
-    PL_COND         shift and go to state 13
-    PL_BICOND       shift and go to state 12
-
-
-state 6
-
-    (10) exp -> PL_NEG . exp
-    (6) exp -> . exp PL_AND exp
-    (7) exp -> . exp PL_OR exp
-    (8) exp -> . exp PL_COND exp
-    (9) exp -> . exp PL_BICOND exp
-    (10) exp -> . PL_NEG exp
-    (11) exp -> . LPAREN exp RPAREN
-    (12) exp -> . PL_VAR
-
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
-    PL_VAR          shift and go to state 8
-
-    exp                            shift and go to state 15
-
-state 7
 
     (11) exp -> LPAREN . exp RPAREN
     (6) exp -> . exp PL_AND exp
@@ -150,8 +116,42 @@ state 7
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
+    PL_VAR          shift and go to state 8
+
+    exp                            shift and go to state 10
+
+state 6
+
+    (4) exp_list -> exp .
+    (5) exp_list -> exp . COMMA exp_list
+    (6) exp -> exp . PL_AND exp
+    (7) exp -> exp . PL_OR exp
+    (8) exp -> exp . PL_COND exp
+    (9) exp -> exp . PL_BICOND exp
+
+    $end            reduce using rule 4 (exp_list -> exp .)
+    COMMA           shift and go to state 12
+    PL_AND          shift and go to state 11
+    PL_OR           shift and go to state 15
+    PL_COND         shift and go to state 14
+    PL_BICOND       shift and go to state 13
+
+
+state 7
+
+    (10) exp -> PL_NEG . exp
+    (6) exp -> . exp PL_AND exp
+    (7) exp -> . exp PL_OR exp
+    (8) exp -> . exp PL_COND exp
+    (9) exp -> . exp PL_BICOND exp
+    (10) exp -> . PL_NEG exp
+    (11) exp -> . LPAREN exp RPAREN
+    (12) exp -> . PL_VAR
+
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
     exp                            shift and go to state 16
@@ -171,12 +171,27 @@ state 8
 
 state 9
 
-    (2) command -> CMD_LATEX_TABLE statement .
+    (2) command -> CMD_LATEX_TABLE exp_list .
 
-    $end            reduce using rule 2 (command -> CMD_LATEX_TABLE statement .)
+    $end            reduce using rule 2 (command -> CMD_LATEX_TABLE exp_list .)
 
 
 state 10
+
+    (11) exp -> LPAREN exp . RPAREN
+    (6) exp -> exp . PL_AND exp
+    (7) exp -> exp . PL_OR exp
+    (8) exp -> exp . PL_COND exp
+    (9) exp -> exp . PL_BICOND exp
+
+    RPAREN          shift and go to state 17
+    PL_AND          shift and go to state 11
+    PL_OR           shift and go to state 15
+    PL_COND         shift and go to state 14
+    PL_BICOND       shift and go to state 13
+
+
+state 11
 
     (6) exp -> exp PL_AND . exp
     (6) exp -> . exp PL_AND exp
@@ -187,17 +202,17 @@ state 10
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
-    exp                            shift and go to state 17
+    exp                            shift and go to state 18
 
-state 11
+state 12
 
-    (5) statement -> exp COMMA . statement
-    (4) statement -> . exp
-    (5) statement -> . exp COMMA statement
+    (5) exp_list -> exp COMMA . exp_list
+    (4) exp_list -> . exp
+    (5) exp_list -> . exp COMMA exp_list
     (6) exp -> . exp PL_AND exp
     (7) exp -> . exp PL_OR exp
     (8) exp -> . exp PL_COND exp
@@ -206,14 +221,14 @@ state 11
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
-    statement                      shift and go to state 18
-    exp                            shift and go to state 5
+    exp_list                       shift and go to state 19
+    exp                            shift and go to state 6
 
-state 12
+state 13
 
     (9) exp -> exp PL_BICOND . exp
     (6) exp -> . exp PL_AND exp
@@ -224,13 +239,13 @@ state 12
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
-    exp                            shift and go to state 19
+    exp                            shift and go to state 20
 
-state 13
+state 14
 
     (8) exp -> exp PL_COND . exp
     (6) exp -> . exp PL_AND exp
@@ -241,13 +256,13 @@ state 13
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
-    exp                            shift and go to state 20
+    exp                            shift and go to state 21
 
-state 14
+state 15
 
     (7) exp -> exp PL_OR . exp
     (6) exp -> . exp PL_AND exp
@@ -258,13 +273,13 @@ state 14
     (11) exp -> . LPAREN exp RPAREN
     (12) exp -> . PL_VAR
 
-    PL_NEG          shift and go to state 6
-    LPAREN          shift and go to state 7
+    PL_NEG          shift and go to state 7
+    LPAREN          shift and go to state 5
     PL_VAR          shift and go to state 8
 
-    exp                            shift and go to state 21
+    exp                            shift and go to state 22
 
-state 15
+state 16
 
     (10) exp -> PL_NEG exp .
     (6) exp -> exp . PL_AND exp
@@ -280,28 +295,26 @@ state 15
     $end            reduce using rule 10 (exp -> PL_NEG exp .)
     RPAREN          reduce using rule 10 (exp -> PL_NEG exp .)
 
-  ! PL_AND          [ shift and go to state 10 ]
-  ! PL_OR           [ shift and go to state 14 ]
-  ! PL_COND         [ shift and go to state 13 ]
-  ! PL_BICOND       [ shift and go to state 12 ]
-
-
-state 16
-
-    (11) exp -> LPAREN exp . RPAREN
-    (6) exp -> exp . PL_AND exp
-    (7) exp -> exp . PL_OR exp
-    (8) exp -> exp . PL_COND exp
-    (9) exp -> exp . PL_BICOND exp
-
-    RPAREN          shift and go to state 22
-    PL_AND          shift and go to state 10
-    PL_OR           shift and go to state 14
-    PL_COND         shift and go to state 13
-    PL_BICOND       shift and go to state 12
+  ! PL_AND          [ shift and go to state 11 ]
+  ! PL_OR           [ shift and go to state 15 ]
+  ! PL_COND         [ shift and go to state 14 ]
+  ! PL_BICOND       [ shift and go to state 13 ]
 
 
 state 17
+
+    (11) exp -> LPAREN exp RPAREN .
+
+    PL_AND          reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+    PL_OR           reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+    PL_COND         reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+    PL_BICOND       reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+    COMMA           reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+    $end            reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+    RPAREN          reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+
+
+state 18
 
     (6) exp -> exp PL_AND exp .
     (6) exp -> exp . PL_AND exp
@@ -314,23 +327,23 @@ state 17
     COMMA           reduce using rule 6 (exp -> exp PL_AND exp .)
     $end            reduce using rule 6 (exp -> exp PL_AND exp .)
     RPAREN          reduce using rule 6 (exp -> exp PL_AND exp .)
-    PL_COND         shift and go to state 13
-    PL_BICOND       shift and go to state 12
+    PL_COND         shift and go to state 14
+    PL_BICOND       shift and go to state 13
 
   ! PL_COND         [ reduce using rule 6 (exp -> exp PL_AND exp .) ]
   ! PL_BICOND       [ reduce using rule 6 (exp -> exp PL_AND exp .) ]
-  ! PL_AND          [ shift and go to state 10 ]
-  ! PL_OR           [ shift and go to state 14 ]
-
-
-state 18
-
-    (5) statement -> exp COMMA statement .
-
-    $end            reduce using rule 5 (statement -> exp COMMA statement .)
+  ! PL_AND          [ shift and go to state 11 ]
+  ! PL_OR           [ shift and go to state 15 ]
 
 
 state 19
+
+    (5) exp_list -> exp COMMA exp_list .
+
+    $end            reduce using rule 5 (exp_list -> exp COMMA exp_list .)
+
+
+state 20
 
     (9) exp -> exp PL_BICOND exp .
     (6) exp -> exp . PL_AND exp
@@ -346,13 +359,13 @@ state 19
     $end            reduce using rule 9 (exp -> exp PL_BICOND exp .)
     RPAREN          reduce using rule 9 (exp -> exp PL_BICOND exp .)
 
-  ! PL_AND          [ shift and go to state 10 ]
-  ! PL_OR           [ shift and go to state 14 ]
-  ! PL_COND         [ shift and go to state 13 ]
-  ! PL_BICOND       [ shift and go to state 12 ]
+  ! PL_AND          [ shift and go to state 11 ]
+  ! PL_OR           [ shift and go to state 15 ]
+  ! PL_COND         [ shift and go to state 14 ]
+  ! PL_BICOND       [ shift and go to state 13 ]
 
 
-state 20
+state 21
 
     (8) exp -> exp PL_COND exp .
     (6) exp -> exp . PL_AND exp
@@ -368,13 +381,13 @@ state 20
     $end            reduce using rule 8 (exp -> exp PL_COND exp .)
     RPAREN          reduce using rule 8 (exp -> exp PL_COND exp .)
 
-  ! PL_AND          [ shift and go to state 10 ]
-  ! PL_OR           [ shift and go to state 14 ]
-  ! PL_COND         [ shift and go to state 13 ]
-  ! PL_BICOND       [ shift and go to state 12 ]
+  ! PL_AND          [ shift and go to state 11 ]
+  ! PL_OR           [ shift and go to state 15 ]
+  ! PL_COND         [ shift and go to state 14 ]
+  ! PL_BICOND       [ shift and go to state 13 ]
 
 
-state 21
+state 22
 
     (7) exp -> exp PL_OR exp .
     (6) exp -> exp . PL_AND exp
@@ -387,24 +400,11 @@ state 21
     COMMA           reduce using rule 7 (exp -> exp PL_OR exp .)
     $end            reduce using rule 7 (exp -> exp PL_OR exp .)
     RPAREN          reduce using rule 7 (exp -> exp PL_OR exp .)
-    PL_COND         shift and go to state 13
-    PL_BICOND       shift and go to state 12
+    PL_COND         shift and go to state 14
+    PL_BICOND       shift and go to state 13
 
   ! PL_COND         [ reduce using rule 7 (exp -> exp PL_OR exp .) ]
   ! PL_BICOND       [ reduce using rule 7 (exp -> exp PL_OR exp .) ]
-  ! PL_AND          [ shift and go to state 10 ]
-  ! PL_OR           [ shift and go to state 14 ]
-
-
-state 22
-
-    (11) exp -> LPAREN exp RPAREN .
-
-    PL_AND          reduce using rule 11 (exp -> LPAREN exp RPAREN .)
-    PL_OR           reduce using rule 11 (exp -> LPAREN exp RPAREN .)
-    PL_COND         reduce using rule 11 (exp -> LPAREN exp RPAREN .)
-    PL_BICOND       reduce using rule 11 (exp -> LPAREN exp RPAREN .)
-    COMMA           reduce using rule 11 (exp -> LPAREN exp RPAREN .)
-    $end            reduce using rule 11 (exp -> LPAREN exp RPAREN .)
-    RPAREN          reduce using rule 11 (exp -> LPAREN exp RPAREN .)
+  ! PL_AND          [ shift and go to state 11 ]
+  ! PL_OR           [ shift and go to state 15 ]
 

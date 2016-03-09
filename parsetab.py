@@ -5,9 +5,9 @@ _tabversion = '3.8'
 
 _lr_method = 'LALR'
 
-_lr_signature = '38C9DB4398A11734FFC162AD617BBE23'
+_lr_signature = 'BD3057968EE7E19D50D8A65920B500B5'
     
-_lr_action_items = {'RPAREN':([8,15,16,17,19,20,21,22,],[-12,-10,22,-6,-9,-8,-7,-11,]),'CMD_SEMANTIC_DERIV':([0,],[1,]),'PL_AND':([5,8,15,16,17,19,20,21,22,],[10,-12,-10,10,-6,-9,-8,-7,-11,]),'COMMA':([5,8,15,17,19,20,21,22,],[11,-12,-10,-6,-9,-8,-7,-11,]),'LPAREN':([1,3,6,7,10,11,12,13,14,],[7,7,7,7,7,7,7,7,7,]),'PL_BICOND':([5,8,15,16,17,19,20,21,22,],[12,-12,-10,12,12,-9,-8,12,-11,]),'PL_VAR':([1,3,6,7,10,11,12,13,14,],[8,8,8,8,8,8,8,8,8,]),'PL_NEG':([1,3,6,7,10,11,12,13,14,],[6,6,6,6,6,6,6,6,6,]),'CMD_LATEX_TABLE':([0,],[3,]),'PL_COND':([5,8,15,16,17,19,20,21,22,],[13,-12,-10,13,13,-9,-8,13,-11,]),'PL_OR':([5,8,15,16,17,19,20,21,22,],[14,-12,-10,14,-6,-9,-8,-7,-11,]),'$end':([0,2,4,5,8,9,15,17,18,19,20,21,22,],[-1,0,-3,-4,-12,-2,-10,-6,-5,-9,-8,-7,-11,]),}
+_lr_action_items = {'RPAREN':([8,10,16,17,18,20,21,22,],[-12,17,-10,-11,-6,-9,-8,-7,]),'CMD_SEMANTIC_DERIV':([0,],[1,]),'PL_AND':([6,8,10,16,17,18,20,21,22,],[11,-12,11,-10,-11,-6,-9,-8,-7,]),'COMMA':([6,8,16,17,18,20,21,22,],[12,-12,-10,-11,-6,-9,-8,-7,]),'LPAREN':([1,3,5,7,11,12,13,14,15,],[5,5,5,5,5,5,5,5,5,]),'PL_BICOND':([6,8,10,16,17,18,20,21,22,],[13,-12,13,-10,-11,13,-9,-8,13,]),'PL_VAR':([1,3,5,7,11,12,13,14,15,],[8,8,8,8,8,8,8,8,8,]),'PL_NEG':([1,3,5,7,11,12,13,14,15,],[7,7,7,7,7,7,7,7,7,]),'CMD_LATEX_TABLE':([0,],[3,]),'PL_COND':([6,8,10,16,17,18,20,21,22,],[14,-12,14,-10,-11,14,-9,-8,14,]),'PL_OR':([6,8,10,16,17,18,20,21,22,],[15,-12,15,-10,-11,-6,-9,-8,-7,]),'$end':([0,2,4,6,8,9,16,17,18,19,20,21,22,],[-1,0,-3,-4,-12,-2,-10,-11,-6,-5,-9,-8,-7,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'command':([0,],[2,]),'exp':([1,3,6,7,10,11,12,13,14,],[5,5,15,16,17,5,19,20,21,]),'statement':([1,3,11,],[4,9,18,]),}
+_lr_goto_items = {'exp_list':([1,3,12,],[4,9,19,]),'command':([0,],[2,]),'exp':([1,3,5,7,11,12,13,14,15,],[6,6,10,16,18,6,20,21,22,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,16 +26,16 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> command","S'",1,None,None,None),
-  ('command -> <empty>','command',0,'p_empty_command','pypl.py',169),
-  ('command -> CMD_LATEX_TABLE statement','command',2,'p_command','pypl.py',174),
-  ('command -> CMD_SEMANTIC_DERIV statement','command',2,'p_command','pypl.py',175),
-  ('statement -> exp','statement',1,'p_statement_exp','pypl.py',180),
-  ('statement -> exp COMMA statement','statement',3,'p_statement_list','pypl.py',184),
-  ('exp -> exp PL_AND exp','exp',3,'p_exp_and','pypl.py',188),
-  ('exp -> exp PL_OR exp','exp',3,'p_exp_or','pypl.py',192),
-  ('exp -> exp PL_COND exp','exp',3,'p_exp_cond','pypl.py',196),
-  ('exp -> exp PL_BICOND exp','exp',3,'p_exp_bicond','pypl.py',200),
-  ('exp -> PL_NEG exp','exp',2,'p_exp_neg','pypl.py',204),
-  ('exp -> LPAREN exp RPAREN','exp',3,'p_exp_group','pypl.py',208),
-  ('exp -> PL_VAR','exp',1,'p_exp_var','pypl.py',212),
+  ('command -> <empty>','command',0,'p_empty_command','pypl.py',236),
+  ('command -> CMD_LATEX_TABLE exp_list','command',2,'p_command','pypl.py',241),
+  ('command -> CMD_SEMANTIC_DERIV exp_list','command',2,'p_command','pypl.py',242),
+  ('exp_list -> exp','exp_list',1,'p_exp_list_1','pypl.py',247),
+  ('exp_list -> exp COMMA exp_list','exp_list',3,'p_exp_list_2','pypl.py',251),
+  ('exp -> exp PL_AND exp','exp',3,'p_exp_and','pypl.py',255),
+  ('exp -> exp PL_OR exp','exp',3,'p_exp_or','pypl.py',259),
+  ('exp -> exp PL_COND exp','exp',3,'p_exp_cond','pypl.py',263),
+  ('exp -> exp PL_BICOND exp','exp',3,'p_exp_bicond','pypl.py',267),
+  ('exp -> PL_NEG exp','exp',2,'p_exp_neg','pypl.py',271),
+  ('exp -> LPAREN exp RPAREN','exp',3,'p_exp_group','pypl.py',275),
+  ('exp -> PL_VAR','exp',1,'p_exp_var','pypl.py',279),
 ]

@@ -15,11 +15,11 @@ class PL_Exp(object):
 		pass
 	def seman_derive(self):
 		gen = self.seman_gen(1)
-		s = gen.next() + "\\\\"
+		s = gen.next() + " \\\\"
 		for deriv in gen:
 			if deriv[0] == "[" and deriv[-1] == "]":
 				deriv = deriv[1:-1] # hack, who cares
-			s += "\n\t\\indent iff \\quad {0} \\\\".format(deriv)
+			s += "\n\t\\hspace*{{1em}} iff \\quad {0} \\\\".format(deriv)
 		return s
 
 class PL_Exp_Set(OrderedSet): 
@@ -238,17 +238,17 @@ def p_empty_command(p):
 
 def p_command(p):
 	"""
-		command : CMD_LATEX_TABLE statement
-				| CMD_SEMANTIC_DERIV statement
+		command : CMD_LATEX_TABLE exp_list
+				| CMD_SEMANTIC_DERIV exp_list
 	"""
 	p[0] = (p[1], p[2])
 
-def p_statement_exp(p):
-	"""statement : exp"""
+def p_exp_list_1(p):
+	"""exp_list : exp"""
 	p[0] = PL_Exp_Set((p[1],))
 
-def p_statement_list(p):
-	"""statement : exp COMMA statement"""
+def p_exp_list_2(p):
+	"""exp_list : exp COMMA exp_list"""
 	p[0] = PL_Exp_Set((p[1],)) | p[3]
 
 def p_exp_and(p):
@@ -282,6 +282,9 @@ def p_exp_var(p):
 def p_error(p):
 	print("Syntax error at '%s'" % p.value)
 
+import ply.yacc as yacc
+yacc.yacc()
+
 def run_cmd(cmd, pl_tree_set):
 	if cmd == "CMD_LATEX_TABLE":
 		if pl_tree_set != None and len(pl_tree_set) != 0 :
@@ -295,9 +298,6 @@ def run_cmd(cmd, pl_tree_set):
 		pass
 	else:
 		print "Invalid command. "
-
-import ply.yacc as yacc
-yacc.yacc()
 
 while True:
 	try:
