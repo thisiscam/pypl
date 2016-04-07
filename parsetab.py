@@ -5,9 +5,9 @@ _tabversion = '3.8'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'BD3057968EE7E19D50D8A65920B500B5'
+_lr_signature = 'ADF76318967CD7ACC349EC07AE3D6BBB'
     
-_lr_action_items = {'RPAREN':([8,10,16,17,18,20,21,22,],[-12,17,-10,-11,-6,-9,-8,-7,]),'CMD_SEMANTIC_DERIV':([0,],[1,]),'PL_AND':([6,8,10,16,17,18,20,21,22,],[11,-12,11,-10,-11,-6,-9,-8,-7,]),'COMMA':([6,8,16,17,18,20,21,22,],[12,-12,-10,-11,-6,-9,-8,-7,]),'LPAREN':([1,3,5,7,11,12,13,14,15,],[5,5,5,5,5,5,5,5,5,]),'PL_BICOND':([6,8,10,16,17,18,20,21,22,],[13,-12,13,-10,-11,13,-9,-8,13,]),'PL_VAR':([1,3,5,7,11,12,13,14,15,],[8,8,8,8,8,8,8,8,8,]),'PL_NEG':([1,3,5,7,11,12,13,14,15,],[7,7,7,7,7,7,7,7,7,]),'CMD_LATEX_TABLE':([0,],[3,]),'PL_COND':([6,8,10,16,17,18,20,21,22,],[14,-12,14,-10,-11,14,-9,-8,14,]),'PL_OR':([6,8,10,16,17,18,20,21,22,],[15,-12,15,-10,-11,-6,-9,-8,-7,]),'$end':([0,2,4,6,8,9,16,17,18,19,20,21,22,],[-1,0,-3,-4,-12,-2,-10,-11,-6,-5,-9,-8,-7,]),}
+_lr_action_items = {'CMD_LATEX_TABLE':([0,],[4,]),'RPAREN':([9,14,17,18,19,20,26,27,28,29,30,31,33,34,35,],[-16,27,-18,-19,-16,-15,-11,-12,-13,-14,-17,-7,-10,-9,-8,]),'CMD_SEMANTIC_DERIV':([0,],[1,]),'PL_COND':([9,10,14,17,18,19,20,26,27,28,29,30,31,33,34,35,],[-16,24,24,-18,-19,-16,-15,-11,-12,-13,-14,-17,24,-10,-9,24,]),'FOL_ALL':([1,2,4,6,11,15,16,21,22,23,24,25,],[7,7,7,7,7,7,7,7,7,7,7,7,]),'FOL_EXIST':([1,2,4,6,11,15,16,21,22,23,24,25,],[8,8,8,8,8,8,8,8,8,8,8,8,]),'PL_PREDVAR':([1,2,4,6,11,15,16,21,22,23,24,25,],[9,9,9,9,9,9,9,9,9,9,9,9,]),'PL_AND':([9,10,14,17,18,19,20,26,27,28,29,30,31,33,34,35,],[-16,21,21,-18,-19,-16,-15,-11,-12,-13,-14,-17,-7,-10,-9,-8,]),'COMMA':([9,10,17,18,19,20,26,27,28,29,30,31,33,34,35,],[-16,22,-18,-19,-16,-15,-11,-12,-13,-14,-17,-7,-10,-9,-8,]),'LPAREN':([1,2,4,6,11,15,16,21,22,23,24,25,],[6,6,6,6,6,6,6,6,6,6,6,6,]),'PL_BICOND':([9,10,14,17,18,19,20,26,27,28,29,30,31,33,34,35,],[-16,23,23,-18,-19,-16,-15,-11,-12,-13,-14,-17,23,-10,-9,23,]),'PL_VAR':([7,8,9,17,18,19,],[15,16,17,-18,-19,17,]),'PL_NEG':([1,2,4,6,11,15,16,21,22,23,24,25,],[11,11,11,11,11,11,11,11,11,11,11,11,]),'CMD_ECHO_STRING':([0,],[2,]),'PL_CONST':([9,17,18,19,],[18,-18,-19,18,]),'PL_OR':([9,10,14,17,18,19,20,26,27,28,29,30,31,33,34,35,],[-16,25,25,-18,-19,-16,-15,-11,-12,-13,-14,-17,-7,-10,-9,-8,]),'$end':([0,3,5,9,10,12,13,17,18,19,20,26,27,28,29,30,31,32,33,34,35,],[-1,0,-3,-16,-5,-4,-2,-18,-19,-16,-15,-11,-12,-13,-14,-17,-7,-6,-10,-9,-8,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'exp_list':([1,3,12,],[4,9,19,]),'command':([0,],[2,]),'exp':([1,3,5,7,11,12,13,14,15,],[6,6,10,16,18,6,20,21,22,]),}
+_lr_goto_items = {'exp_list':([1,2,4,22,],[5,12,13,32,]),'term_list':([9,19,],[20,30,]),'term':([9,19,],[19,19,]),'command':([0,],[3,]),'exp':([1,2,4,6,11,15,16,21,22,23,24,25,],[10,10,10,14,26,28,29,31,10,33,34,35,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,16 +26,23 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> command","S'",1,None,None,None),
-  ('command -> <empty>','command',0,'p_empty_command','pypl.py',236),
-  ('command -> CMD_LATEX_TABLE exp_list','command',2,'p_command','pypl.py',241),
-  ('command -> CMD_SEMANTIC_DERIV exp_list','command',2,'p_command','pypl.py',242),
-  ('exp_list -> exp','exp_list',1,'p_exp_list_1','pypl.py',247),
-  ('exp_list -> exp COMMA exp_list','exp_list',3,'p_exp_list_2','pypl.py',251),
-  ('exp -> exp PL_AND exp','exp',3,'p_exp_and','pypl.py',255),
-  ('exp -> exp PL_OR exp','exp',3,'p_exp_or','pypl.py',259),
-  ('exp -> exp PL_COND exp','exp',3,'p_exp_cond','pypl.py',263),
-  ('exp -> exp PL_BICOND exp','exp',3,'p_exp_bicond','pypl.py',267),
-  ('exp -> PL_NEG exp','exp',2,'p_exp_neg','pypl.py',271),
-  ('exp -> LPAREN exp RPAREN','exp',3,'p_exp_group','pypl.py',275),
-  ('exp -> PL_VAR','exp',1,'p_exp_var','pypl.py',279),
+  ('command -> <empty>','command',0,'p_empty_command','pypl.py',289),
+  ('command -> CMD_LATEX_TABLE exp_list','command',2,'p_command','pypl.py',294),
+  ('command -> CMD_SEMANTIC_DERIV exp_list','command',2,'p_command','pypl.py',295),
+  ('command -> CMD_ECHO_STRING exp_list','command',2,'p_command','pypl.py',296),
+  ('exp_list -> exp','exp_list',1,'p_exp_list_1','pypl.py',301),
+  ('exp_list -> exp COMMA exp_list','exp_list',3,'p_exp_list_2','pypl.py',305),
+  ('exp -> exp PL_AND exp','exp',3,'p_exp_and','pypl.py',309),
+  ('exp -> exp PL_OR exp','exp',3,'p_exp_or','pypl.py',313),
+  ('exp -> exp PL_COND exp','exp',3,'p_exp_cond','pypl.py',317),
+  ('exp -> exp PL_BICOND exp','exp',3,'p_exp_bicond','pypl.py',321),
+  ('exp -> PL_NEG exp','exp',2,'p_exp_neg','pypl.py',325),
+  ('exp -> LPAREN exp RPAREN','exp',3,'p_exp_group','pypl.py',329),
+  ('exp -> FOL_ALL PL_VAR exp','exp',3,'p_exp_quantifier_all','pypl.py',333),
+  ('exp -> FOL_EXIST PL_VAR exp','exp',3,'p_exp_quantifier_exist','pypl.py',337),
+  ('exp -> PL_PREDVAR term_list','exp',2,'p_exp_atomicformula','pypl.py',341),
+  ('term_list -> <empty>','term_list',0,'p_term_list','pypl.py',346),
+  ('term_list -> term term_list','term_list',2,'p_term_list','pypl.py',347),
+  ('term -> PL_VAR','term',1,'p_term','pypl.py',354),
+  ('term -> PL_CONST','term',1,'p_term','pypl.py',355),
 ]

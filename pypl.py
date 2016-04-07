@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import ply.lex as lex
 import ply.yacc as yacc
 from collections import OrderedDict
@@ -36,11 +38,12 @@ def make_table_memo(make_table):
 			make_table(self, table)
 	return wrapper
 
-class PL_Var_Exp(PL_Exp):
-	def __init__(self, var_name):
-		self.var_name = var_name
+class PL_Atomic_Formula_Exp(PL_Exp):
+	def __init__(self, atomicformula_name, terms):
+		self.atomicformula_name = atomicformula_name
+		self.terms = terms
 	def __str__(self):
-		return self.var_name
+		return self.atomicformula_name + "".join(str(t) for t in self.terms)
 	@make_table_memo
 	def make_table(self, table):
 		for pl, col in table.items():
@@ -49,8 +52,8 @@ class PL_Var_Exp(PL_Exp):
 	def latex_str(self):
 		return str(self)
 	def seman_gen(self, tf):
-		yield "$V_I({0})$ = {1}".format(self.var_name, tf)
-		yield "$I({0})$ = {1}".format(self.var_name, tf)
+		yield "$V_I({0})$ = {1}".format(self.atomicformula_name, tf)
+		yield "$I({0})$ = {1}".format(self.atomicformula_name, tf)
 
 class PL_Neg_Exp(PL_Exp):
 	def __init__(self, content):
@@ -81,7 +84,7 @@ class PL_Bin_Exp(PL_Exp):
 	def seman_gen(self, tf):
 		yield "$V_I({0})$ = {1}".format(self.latex_str(), tf)
 		lv, mid, rv = self.seman_deriv_expands(tf)
-		if isinstance(self.left, PL_Var_Exp) and isinstance(self.right, PL_Var_Exp):
+		if isinstance(self.left, PL_Atomic_Formula_Exp) and isinstance(self.right, PL_Atomic_Formula_Exp):
 			for left_gen, right_gen in zip(self.left.seman_gen(lv), self.right.seman_gen(rv)):
 				yield "[{0} {1} {2}]".format(left_gen, mid, right_gen)
 		else:
@@ -138,7 +141,7 @@ class PL_Cond_Exp(PL_Bin_Exp):
 
 class PL_Bicond_Exp(PL_Bin_Exp):
 	def __str__(self):
-		return "(" + str(self.left) + " = " + str(self.right) + ")"
+		return "(" + str(self.left) + " == " + str(self.right) + ")"
 	def latex_str(self):
 		return "(" + self.left.latex_str() + " \\leftrightarrow " + self.right.latex_str() + ")"
 	@staticmethod
@@ -146,7 +149,7 @@ class PL_Bicond_Exp(PL_Bin_Exp):
 		return lr[0] == lr[1]
 	def seman_gen(self, tf):
 		yield "$V_I({0})$ = {1}".format(self.latex_str(), tf)
-		if isinstance(self.left, PL_Var_Exp) and isinstance(self.right, PL_Var_Exp):
+		if isinstance(self.left, PL_Atomic_Formula_Exp) and isinstance(self.right, PL_Atomic_Formula_Exp):
 			for left_gen0, right_gen0, left_gen1, right_gen1  in zip(	  
 																		self.left.seman_gen(0), 
 																		self.right.seman_gen(0),
@@ -165,7 +168,42 @@ class PL_Bicond_Exp(PL_Bin_Exp):
 				left_final_gen0, left_final_gen1 = left_gen0, left_gen1
 			for right_gen0, right_gen1 in zip(self.right.seman_gen(0), self.right.seman_gen(1)):
 				yield "[[{0} and {1}] or [{2} and {3}]]".format(left_final_gen0, right_gen0, 
+
 															left_final_gen1, right_gen1)
+
+class FOL_Quantifier_Exp(PL_Exp):
+	def __init__(self, var_name, scoped_exp):
+		self.var_name = var_name
+		self.scoped_exp = scoped_exp
+
+class FOL_All_Exp(FOL_Quantifier_Exp):
+	def __str__(self):
+		return "∀{0}{1}".format(self.var_name, self.scoped_exp)
+	def latex_str(self):
+		return "\\forall{0}{1}".format(self.var_name.latex_str(), self.scoped_exp.latex_str())
+
+class FOL_Exist_Exp(FOL_Quantifier_Exp):
+	def __str__(self):
+		return "∃{0}{1}".format(self.var_name, self.scoped_exp)
+	def latex_str(self):
+		return "\\exists{0}{1}".format(self.var_name.latex_str(), self.scoped_exp.latex_str())
+
+class FOL_Term(object):
+	def __init__(self, name):
+		self.name = name
+	def __str__(self):
+		return self.name
+	def latex_str(self):
+		if len(self.name) > 0:
+			return "{0}_{{{1}}}".format(self.name[0], self.name[1:])
+		else:
+			return self.name
+
+class FOL_Var(FOL_Term):
+	pass
+
+class FOL_Const(FOL_Term):
+	pass
 
 def make_latex_table(table):
 	num_cols = len(table)
@@ -185,20 +223,22 @@ tokens = (
 	'PL_NEG',
 	'PL_COND',
 	'PL_BICOND',
+	'PL_PREDVAR',
 	'PL_VAR',
+	'PL_CONST',
+	'FOL_ALL',
+	'FOL_EXIST',
 	'LPAREN',
 	'RPAREN',
 	'COMMA',
 	'CMD_LATEX_TABLE',
-	'CMD_SEMANTIC_DERIV'
- )
-
-t_PL_AND = r'\&|\\wedge|and'
-t_PL_OR = r'\||\\vee|or'
-t_PL_NEG = r'\!|\\neg|not'
+	'CMD_SEMANTIC_DERIV',
+	'CMD_ECHO_STRING'
+)
+ 
 t_PL_COND = r'->|\\supset'
-t_PL_BICOND = r'=|\\leftrightarrow'
-t_PL_VAR = r'[A-Z]'
+t_PL_BICOND = r'<->|==|\\leftrightarrow'
+t_PL_PREDVAR = r'[A-Z]'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 t_COMMA = r','
@@ -209,6 +249,35 @@ def t_CMD_LATEX_TABLE(t):
 def t_CMD_SEMANTIC_DERIV(t):
 	r'derive'
 	t.value = "CMD_SEMANTIC_DERIV"
+	return t
+def t_CMD_ECHO_STRING(t):
+	r'echo|print'
+	t.value = "CMD_ECHO_STRING"
+	return t
+def t_PL_AND(t):
+	r'\&|\\wedge|and'
+	return t
+def t_PL_OR(t):
+	r'\||\\vee|or'
+	return t
+def t_PL_NEG(t):
+	r'\!|\\neg|not'
+	return t
+def t_FOL_ALL(t):
+	r'all|\\forall'
+	t.value = "FOL_ALL"
+	return t
+def t_FOL_EXIST(t):
+	r'exists|\\exists'
+	t.value = "FOL_EXIST"
+	return t
+def t_PL_VAR(t):
+	r'[wxyz][0-9]*'
+	t.value = FOL_Var(t.value)
+	return t
+def t_PL_CONST(t):
+	r'[a-v][0-9]*'
+	t.value = FOL_Var(t.value)
 	return t
 
 # Define a rule so we can track line numbers
@@ -228,7 +297,7 @@ lexer = lex.lex()
 precedence = (
 	('left','PL_AND','PL_OR'),
 	('left','PL_COND','PL_BICOND'),
-	('right','PL_NEG'),
+	('right','PL_NEG', 'FOL_ALL', 'FOL_EXIST', 'PL_VAR'),
 )
 
 start = "command"
@@ -241,6 +310,7 @@ def p_command(p):
 	"""
 		command : CMD_LATEX_TABLE exp_list
 				| CMD_SEMANTIC_DERIV exp_list
+				| CMD_ECHO_STRING exp_list
 	"""
 	p[0] = (p[1], p[2])
 
@@ -276,15 +346,42 @@ def p_exp_group(p):
 	"""exp : LPAREN exp RPAREN"""
 	p[0] = p[2]
 
-def p_exp_var(p):
-	"""exp : PL_VAR"""
-	p[0] = PL_Var_Exp(p[1])
+def p_exp_quantifier_all(p):
+	"""exp : FOL_ALL PL_VAR exp """
+	p[0] = FOL_All_Exp(p[2], p[3])
+
+def p_exp_quantifier_exist(p):
+	"""exp : FOL_EXIST PL_VAR exp """
+	p[0] = FOL_Exist_Exp(p[2], p[3])
+
+def p_exp_atomicformula(p):
+	"""exp : PL_PREDVAR term_list """
+	p[0] = PL_Atomic_Formula_Exp(p[1], p[2])
+
+def p_term_list(p):
+	"""
+		term_list : 
+				  | term term_list 
+	"""
+	if len(p) > 1:
+		p[0] = [p[1]] + p[2]
+	else:
+		p[0] = []
+
+def p_term(p):
+	"""term : PL_VAR 
+			| PL_CONST """
+	p[0] = p[1]
 
 def p_error(p):
-	print("Syntax error at '%s'" % p.value)
+	if p is None:
+		error_s = "EOF"
+	else:
+		error_s = p.value
+	print("Syntax error at '%s'" % error_s)
 
 import ply.yacc as yacc
-yacc.yacc()
+parser = yacc.yacc()
 
 def run_cmd(cmd, pl_tree_set):
 	if cmd == "CMD_LATEX_TABLE":
@@ -299,15 +396,20 @@ def run_cmd(cmd, pl_tree_set):
 			s = pl_tree.seman_derive()
 			print s
 			clipboard.copy(s)
+	elif cmd == "CMD_ECHO_STRING":
+		for pl_tree in pl_tree_set:
+			print pl_tree
 	elif cmd == "CMD_EMPTY":
 		pass
 	else:
-		print "Invalid command. "
+		print "Invalid command."
 
 while True:
 	try:
 		s = raw_input('PL> ')
 	except EOFError:
 		break
-	cmd, pl_tree_set = yacc.parse(s)
-	run_cmd(cmd, pl_tree_set)
+	result = parser.parse(s)
+	if result is not None:
+		cmd, pl_tree_set = result
+		run_cmd(cmd, pl_tree_set)
