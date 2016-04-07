@@ -7,6 +7,24 @@ from ordered_set import OrderedSet
 import readline
 import clipboard
 
+class AssignmengFunctionG(OrderedDict):
+	def __init__(self, *args, **kwargs):
+		super(AssignmengFunctionG, self).__init__(*args, **kwargs)
+		self.used_d_count = 0
+	def add_variable(self, var_name):
+		if self.used_d_count == 0:
+			self[var_name] = "d"
+		elif self.used_d_count == 1:
+			self[var_name] = "d'"
+		else:
+			self[var_name] = "d_{{{0}}}".format(self.used_d_count)
+		self.used_d_count += 1
+		return self[var_name]
+	def __copy__(self):
+		new_obj = super(AssignmengFunctionG, self).__copy__()
+		new_obj.used_d_count = self.used_d_count
+		return new_obj
+
 class PL_Exp(object): 
 	def __eq__(self, other):
 		return str(self) == str(other)
@@ -24,6 +42,31 @@ class PL_Exp(object):
 				deriv = deriv[1:-1] # hack, who cares
 			s += "\n\t\\hspace*{{1em}} iff \\quad {0} \\\\".format(deriv)
 		return s
+	def fol_seman_derive(self):
+		g = AssignmengFunctionG()
+		gen = self.fol_seman_gen(g, 1)
+		s = gen.next() + " \\\\"
+		for deriv in gen:
+			if deriv[0] == "[" and deriv[-1] == "]":
+				deriv = deriv[1:-1] # hack, who cares
+			s += "\n\\tiff {0} \\\\".format(deriv)
+		return s
+
+def tf_to_not(tf):
+	if tf == 1:
+		return ""
+	else:
+		return "\\not"
+
+def g_map_str(g):
+	if len(g) == 0:
+		return "g"
+	elif len(g) == 1:
+		k, v = g.items()[0]
+		return "g^{{{0}\\to {1}}}".format(k, v)
+	elif len(g) > 1:
+		raise Exception("Not implemented yet!")
+
 
 class PL_Exp_Set(OrderedSet): 
 	def make_table(self):
@@ -54,6 +97,24 @@ class PL_Atomic_Formula_Exp(PL_Exp):
 	def seman_gen(self, tf):
 		yield "$V_I({0})$ = {1}".format(self.atomicformula_name, tf)
 		yield "$I({0})$ = {1}".format(self.atomicformula_name, tf)
+	def fol_seman_gen(self, g, tf):
+		yield "\\M{0}\\m_{{{1}}}{2}".format(tf_to_not(tf), g_map_str(g), self.latex_str())
+		if len(self.terms) == 0:
+			yield "\\I({0})={1}".format(self.atomicformula_name, tf)
+		elif len(self.terms) == 1:
+			for t_gen in self.terms[0].fol_term_gen(g):
+				yield "{0}{1}\\in\\I({2})".format(t_gen, tf_to_not(tf), self.atomicformula_name)
+		else:
+			for i, term in enumerate(self.terms):
+				tuple_pre = ",".join(self.terms[:i]) + "," if i > 0 else ""
+				tuple_post = "," + ",".join(map(lambda t: t.denotation_str(g), self.terms[i+1:])) if i < len(self.terms) - 1 else ""
+				last_t_gen = None
+				for t_gen in term.fol_term_gen(g):
+					yield "\\tuple{{{0}{1}{2}}}{3}\\in\\I({4})".format(tuple_pre, t_gen, tuple_post, 
+															tf_to_not(tf), self.atomicformula_name)
+					last_t_gen = t_gen
+				self.terms[i] = last_t_gen
+
 
 class PL_Neg_Exp(PL_Exp):
 	def __init__(self, content):
@@ -70,6 +131,11 @@ class PL_Neg_Exp(PL_Exp):
 		yield "$V_I({0})$ = {1}".format(self.latex_str(), tf)
 		for body_gen in self.content.seman_gen(1 - tf):
 			yield body_gen
+	def fol_seman_gen(self, g, tf):
+		yield "\\M{0}\\m_{{{1}}}{2}".format(tf_to_not(tf), g_map_str(g), self.latex_str())
+		for body_gen in self.content.fol_seman_gen(g, 1 - tf):
+			yield body_gen
+
 
 class PL_Bin_Exp(PL_Exp):
 	def __init__(self, left, right):
@@ -89,13 +155,32 @@ class PL_Bin_Exp(PL_Exp):
 				yield "[{0} {1} {2}]".format(left_gen, mid, right_gen)
 		else:
 			left_final_gen = None
-			righ_generator = self.right.seman_gen(rv)
-			right_gen_init = righ_generator.next()
+			right_generator = self.right.seman_gen(rv)
+			right_gen_init = right_generator.next()
 			for left_gen in self.left.seman_gen(lv):
 				yield "[{0} {1} {2}]".format(left_gen, mid, right_gen_init)
 				left_final_gen = left_gen
-			for right_gen in righ_generator:
+			for right_gen in right_generator:
 				yield "[{0} {1} {2}]".format(left_final_gen, mid, right_gen)
+	def fol_seman_gen(self, g, tf):
+		yield "\\M{0}\\m_{{{1}}}{2}".format(tf_to_not(tf), g_map_str(g), self.latex_str())
+		lv, mid, rv = self.fol_seman_deriv_expands(tf)
+		if isinstance(self.left, PL_Atomic_Formula_Exp) and isinstance(self.right, PL_Atomic_Formula_Exp):
+			for left_gen, right_gen in zip(self.left.fol_seman_gen(g, lv), self.right.fol_seman_gen(g, rv)):
+				yield "[{0} {1} {2}]".format(left_gen, mid, right_gen)
+		else:
+			left_final_gen = None
+			right_generator = self.right.fol_seman_gen(g, rv)
+			right_gen_init = right_generator.next()
+			for left_gen in self.left.fol_seman_gen(g, lv):
+				yield "[{0} {1} {2}]".format(left_gen, mid, right_gen_init)
+				left_final_gen = left_gen
+			for right_gen in right_generator:
+				yield "[{0} {1} {2}]".format(left_final_gen, mid, right_gen)
+	def fol_seman_deriv_expands(self, tf):
+		""" Compat from pl, this will map e.g. add to \\tand """
+		sde = self.seman_deriv_expands(tf)
+		return sde[0], "\\t" + sde[1], sde[2]
 
 class PL_And_Exp(PL_Bin_Exp):
 	def __str__(self):
@@ -160,8 +245,8 @@ class PL_Bicond_Exp(PL_Bin_Exp):
 																left_gen1, right_gen1)
 		else:
 			left_final_gen0, left_final_gen1 = None, None
-			righ_generator0, righ_generator1 = self.right.seman_gen(0), self.right.seman_gen(1)
-			right_gen_init0, right_gen_init1 = righ_generator0.next(), righ_generator1.next()
+			right_generator0, right_generator1 = self.right.seman_gen(0), self.right.seman_gen(1)
+			right_gen_init0, right_gen_init1 = right_generator0.next(), right_generator1.next()
 			for left_gen0, left_gen1 in zip(self.left.seman_gen(0), self.left.seman_gen(1)):
 				yield "[[{0} and {1}] or [{2} and {3}]]".format(left_gen0, right_gen_init0, 
 															left_gen1, right_gen_init1)
@@ -170,23 +255,38 @@ class PL_Bicond_Exp(PL_Bin_Exp):
 				yield "[[{0} and {1}] or [{2} and {3}]]".format(left_final_gen0, right_gen0, 
 
 															left_final_gen1, right_gen1)
+	def seman_deriv_expands(self, tf):
+		if tf:
+			return (1, "iff", 1)
+		else:
+			return (0, "notiff", 0) #TODO: what should it be in this case?
 
 class FOL_Quantifier_Exp(PL_Exp):
 	def __init__(self, var_name, scoped_exp):
 		self.var_name = var_name
 		self.scoped_exp = scoped_exp
+	def fol_seman_gen(self, g, tf):
+		yield "\\M{0}\\m_{{{1}}}{2}".format(tf_to_not(tf), g_map_str(g), self.latex_str())
+		g_prime = g.copy()
+		var_bound_d = g_prime.add_variable(self.var_name)
+		for gen in self.scoped_exp.fol_seman_gen(g_prime, tf):
+			yield "{0} {1}\\in\\D, {2}".format(self.fol_seman_deriv_quantifier(), var_bound_d, gen)
 
 class FOL_All_Exp(FOL_Quantifier_Exp):
 	def __str__(self):
 		return "∀{0}{1}".format(self.var_name, self.scoped_exp)
 	def latex_str(self):
-		return "\\forall{0}{1}".format(self.var_name.latex_str(), self.scoped_exp.latex_str())
+		return "\\forall {0}{1}".format(self.var_name.latex_str(), self.scoped_exp.latex_str())
+	def fol_seman_deriv_quantifier(self):
+		return "\\tall"
 
 class FOL_Exist_Exp(FOL_Quantifier_Exp):
 	def __str__(self):
 		return "∃{0}{1}".format(self.var_name, self.scoped_exp)
 	def latex_str(self):
 		return "\\exists{0}{1}".format(self.var_name.latex_str(), self.scoped_exp.latex_str())
+	def fol_seman_deriv_quantifier(self):
+		return "\\tsome"
 
 class FOL_Term(object):
 	def __init__(self, name):
@@ -194,16 +294,30 @@ class FOL_Term(object):
 	def __str__(self):
 		return self.name
 	def latex_str(self):
-		if len(self.name) > 0:
+		if len(self.name) > 1:
 			return "{0}_{{{1}}}".format(self.name[0], self.name[1:])
 		else:
 			return self.name
+	def __hash__(self):
+		return hash(str(self))
+	def __eq__(self, other):
+		return str(self) == str(other)
+	def denotation_str(self, g):
+		return "[{0}]_{{\M,{1}}}".format(self.name, g_map_str(g))
 
 class FOL_Var(FOL_Term):
-	pass
+	def fol_term_gen(self, g):
+		yield self.denotation_str(g)
+		import pdb; pdb.set_trace()
+		if self in g:
+			yield g[self]
+		else:
+			pass # Unbound variable
 
 class FOL_Const(FOL_Term):
-	pass
+	def fol_term_gen(self, g):
+		yield self.denotation_str(g)
+		yield "\I({0})".format(self.name)
 
 def make_latex_table(table):
 	num_cols = len(table)
@@ -393,7 +507,7 @@ def run_cmd(cmd, pl_tree_set):
 	elif cmd == "CMD_SEMANTIC_DERIV":
 		if pl_tree_set != None and len(pl_tree_set) == 1:
 			pl_tree = pl_tree_set[0]
-			s = pl_tree.seman_derive()
+			s = pl_tree.fol_seman_derive()
 			print s
 			clipboard.copy(s)
 	elif cmd == "CMD_ECHO_STRING":
