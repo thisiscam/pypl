@@ -11,17 +11,17 @@ class AssignmengFunctionG(OrderedDict):
 	def __init__(self, *args, **kwargs):
 		super(AssignmengFunctionG, self).__init__(*args, **kwargs)
 		self.used_d_count = 0
-	def add_variable(self, var_name):
+	def add_variable(self, var):
 		if self.used_d_count == 0:
-			self[var_name] = "d"
+			self[var] = "d"
 		elif self.used_d_count == 1:
-			self[var_name] = "d'"
+			self[var] = "d'"
 		else:
-			self[var_name] = "d_{{{0}}}".format(self.used_d_count)
+			self[var] = "d^{{{0}}}".format(self.used_d_count)
 		self.used_d_count += 1
-		return self[var_name]
-	def __copy__(self):
-		new_obj = super(AssignmengFunctionG, self).__copy__()
+		return self[var]
+	def copy(self):
+		new_obj = super(AssignmengFunctionG, self).copy()
 		new_obj.used_d_count = self.used_d_count
 		return new_obj
 
@@ -64,9 +64,14 @@ def g_map_str(g):
 	elif len(g) == 1:
 		k, v = g.items()[0]
 		return "g^{{{0}\\to {1}}}".format(k, v)
-	elif len(g) > 1:
-		raise Exception("Not implemented yet!")
-
+	elif len(g) == 2:
+		k1, v1 = g.items()[0]
+		k2, v2 = g.items()[1]
+		return "g^{{{0}\\to {1}}}_{{{2}\\to {3}}}".format(k1, v1, k2, v2)
+	else:
+		k_last, v_last = g.items()[-1]
+		vstack = "\\\\".join("{0}\\to {1}".format(k,v) for k,v in g.items()[:-1])
+		return "g^{{\\substack{{{0}}}}}_{{{1}\\to {2}}}".format(vstack, k_last, v_last)
 
 class PL_Exp_Set(OrderedSet): 
 	def make_table(self):
@@ -284,7 +289,7 @@ class FOL_Exist_Exp(FOL_Quantifier_Exp):
 	def __str__(self):
 		return "∃{0}{1}".format(self.var_name, self.scoped_exp)
 	def latex_str(self):
-		return "\\exists{0}{1}".format(self.var_name.latex_str(), self.scoped_exp.latex_str())
+		return "\\exists {0}{1}".format(self.var_name.latex_str(), self.scoped_exp.latex_str())
 	def fol_seman_deriv_quantifier(self):
 		return "\\tsome"
 
@@ -308,7 +313,6 @@ class FOL_Term(object):
 class FOL_Var(FOL_Term):
 	def fol_term_gen(self, g):
 		yield self.denotation_str(g)
-		import pdb; pdb.set_trace()
 		if self in g:
 			yield g[self]
 		else:
