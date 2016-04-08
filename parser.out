@@ -13,15 +13,16 @@ Rule 7     exp -> exp PL_AND exp
 Rule 8     exp -> exp PL_OR exp
 Rule 9     exp -> exp PL_COND exp
 Rule 10    exp -> exp PL_BICOND exp
-Rule 11    exp -> PL_NEG exp
-Rule 12    exp -> LPAREN exp RPAREN
-Rule 13    exp -> FOL_ALL PL_VAR exp
-Rule 14    exp -> FOL_EXIST PL_VAR exp
-Rule 15    exp -> PL_PREDVAR term_list
-Rule 16    term_list -> <empty>
-Rule 17    term_list -> term term_list
-Rule 18    term -> PL_VAR
-Rule 19    term -> PL_CONST
+Rule 11    exp -> LPAREN term FOL_IDENTITY term RPAREN
+Rule 12    exp -> PL_NEG exp
+Rule 13    exp -> LPAREN exp RPAREN
+Rule 14    exp -> FOL_ALL PL_VAR exp
+Rule 15    exp -> FOL_EXIST PL_VAR exp
+Rule 16    exp -> PL_PREDVAR term_list
+Rule 17    term_list -> <empty>
+Rule 18    term_list -> term term_list
+Rule 19    term -> PL_VAR
+Rule 20    term -> PL_CONST
 
 Terminals, with rules where they appear
 
@@ -29,27 +30,28 @@ CMD_ECHO_STRING      : 4
 CMD_LATEX_TABLE      : 2
 CMD_SEMANTIC_DERIV   : 3
 COMMA                : 6
-FOL_ALL              : 13
-FOL_EXIST            : 14
-LPAREN               : 12
+FOL_ALL              : 14
+FOL_EXIST            : 15
+FOL_IDENTITY         : 11
+LPAREN               : 11 13
 PL_AND               : 7
 PL_BICOND            : 10
 PL_COND              : 9
-PL_CONST             : 19
-PL_NEG               : 11
+PL_CONST             : 20
+PL_NEG               : 12
 PL_OR                : 8
-PL_PREDVAR           : 15
-PL_VAR               : 13 14 18
-RPAREN               : 12
+PL_PREDVAR           : 16
+PL_VAR               : 14 15 19
+RPAREN               : 11 13
 error                : 
 
 Nonterminals, with rules where they appear
 
 command              : 0
-exp                  : 5 6 7 7 8 8 9 9 10 10 11 12 13 14
+exp                  : 5 6 7 7 8 8 9 9 10 10 12 13 14 15
 exp_list             : 2 3 4 6
-term                 : 17
-term_list            : 15 17
+term                 : 11 11 18
+term_list            : 16 18
 
 Parsing method: LALR
 
@@ -77,14 +79,15 @@ state 1
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
     LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
@@ -101,14 +104,15 @@ state 2
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
     LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
@@ -131,14 +135,15 @@ state 4
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
     LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
@@ -155,59 +160,66 @@ state 5
 
 state 6
 
-    (12) exp -> LPAREN . exp RPAREN
+    (11) exp -> LPAREN . term FOL_IDENTITY term RPAREN
+    (13) exp -> LPAREN . exp RPAREN
+    (19) term -> . PL_VAR
+    (20) term -> . PL_CONST
     (7) exp -> . exp PL_AND exp
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
+    PL_VAR          shift and go to state 17
+    PL_CONST        shift and go to state 15
     LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
 
-    exp                            shift and go to state 14
+    term                           shift and go to state 14
+    exp                            shift and go to state 16
 
 state 7
 
-    (13) exp -> FOL_ALL . PL_VAR exp
+    (14) exp -> FOL_ALL . PL_VAR exp
 
-    PL_VAR          shift and go to state 15
+    PL_VAR          shift and go to state 18
 
 
 state 8
 
-    (14) exp -> FOL_EXIST . PL_VAR exp
+    (15) exp -> FOL_EXIST . PL_VAR exp
 
-    PL_VAR          shift and go to state 16
+    PL_VAR          shift and go to state 19
 
 
 state 9
 
-    (15) exp -> PL_PREDVAR . term_list
-    (16) term_list -> .
-    (17) term_list -> . term term_list
-    (18) term -> . PL_VAR
-    (19) term -> . PL_CONST
+    (16) exp -> PL_PREDVAR . term_list
+    (17) term_list -> .
+    (18) term_list -> . term term_list
+    (19) term -> . PL_VAR
+    (20) term -> . PL_CONST
 
-    COMMA           reduce using rule 16 (term_list -> .)
-    PL_AND          reduce using rule 16 (term_list -> .)
-    PL_OR           reduce using rule 16 (term_list -> .)
-    PL_COND         reduce using rule 16 (term_list -> .)
-    PL_BICOND       reduce using rule 16 (term_list -> .)
-    $end            reduce using rule 16 (term_list -> .)
-    RPAREN          reduce using rule 16 (term_list -> .)
+    COMMA           reduce using rule 17 (term_list -> .)
+    PL_AND          reduce using rule 17 (term_list -> .)
+    PL_OR           reduce using rule 17 (term_list -> .)
+    PL_COND         reduce using rule 17 (term_list -> .)
+    PL_BICOND       reduce using rule 17 (term_list -> .)
+    $end            reduce using rule 17 (term_list -> .)
+    RPAREN          reduce using rule 17 (term_list -> .)
     PL_VAR          shift and go to state 17
-    PL_CONST        shift and go to state 18
+    PL_CONST        shift and go to state 15
 
-    term                           shift and go to state 19
-    term_list                      shift and go to state 20
+    term                           shift and go to state 20
+    term_list                      shift and go to state 21
 
 state 10
 
@@ -219,33 +231,34 @@ state 10
     (10) exp -> exp . PL_BICOND exp
 
     $end            reduce using rule 5 (exp_list -> exp .)
-    COMMA           shift and go to state 22
-    PL_AND          shift and go to state 21
-    PL_OR           shift and go to state 25
-    PL_COND         shift and go to state 24
-    PL_BICOND       shift and go to state 23
+    COMMA           shift and go to state 23
+    PL_AND          shift and go to state 22
+    PL_OR           shift and go to state 26
+    PL_COND         shift and go to state 25
+    PL_BICOND       shift and go to state 24
 
 
 state 11
 
-    (11) exp -> PL_NEG . exp
+    (12) exp -> PL_NEG . exp
     (7) exp -> . exp PL_AND exp
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
     LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
 
-    exp                            shift and go to state 26
+    exp                            shift and go to state 27
 
 state 12
 
@@ -263,147 +276,159 @@ state 13
 
 state 14
 
-    (12) exp -> LPAREN exp . RPAREN
+    (11) exp -> LPAREN term . FOL_IDENTITY term RPAREN
+
+    FOL_IDENTITY    shift and go to state 28
+
+
+state 15
+
+    (20) term -> PL_CONST .
+
+    PL_VAR          reduce using rule 20 (term -> PL_CONST .)
+    PL_CONST        reduce using rule 20 (term -> PL_CONST .)
+    COMMA           reduce using rule 20 (term -> PL_CONST .)
+    PL_AND          reduce using rule 20 (term -> PL_CONST .)
+    PL_OR           reduce using rule 20 (term -> PL_CONST .)
+    PL_COND         reduce using rule 20 (term -> PL_CONST .)
+    PL_BICOND       reduce using rule 20 (term -> PL_CONST .)
+    $end            reduce using rule 20 (term -> PL_CONST .)
+    RPAREN          reduce using rule 20 (term -> PL_CONST .)
+    FOL_IDENTITY    reduce using rule 20 (term -> PL_CONST .)
+
+
+state 16
+
+    (13) exp -> LPAREN exp . RPAREN
     (7) exp -> exp . PL_AND exp
     (8) exp -> exp . PL_OR exp
     (9) exp -> exp . PL_COND exp
     (10) exp -> exp . PL_BICOND exp
 
-    RPAREN          shift and go to state 27
-    PL_AND          shift and go to state 21
-    PL_OR           shift and go to state 25
-    PL_COND         shift and go to state 24
-    PL_BICOND       shift and go to state 23
+    RPAREN          shift and go to state 29
+    PL_AND          shift and go to state 22
+    PL_OR           shift and go to state 26
+    PL_COND         shift and go to state 25
+    PL_BICOND       shift and go to state 24
 
-
-state 15
-
-    (13) exp -> FOL_ALL PL_VAR . exp
-    (7) exp -> . exp PL_AND exp
-    (8) exp -> . exp PL_OR exp
-    (9) exp -> . exp PL_COND exp
-    (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
-
-    PL_NEG          shift and go to state 11
-    LPAREN          shift and go to state 6
-    FOL_ALL         shift and go to state 7
-    FOL_EXIST       shift and go to state 8
-    PL_PREDVAR      shift and go to state 9
-
-    exp                            shift and go to state 28
-
-state 16
-
-    (14) exp -> FOL_EXIST PL_VAR . exp
-    (7) exp -> . exp PL_AND exp
-    (8) exp -> . exp PL_OR exp
-    (9) exp -> . exp PL_COND exp
-    (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
-
-    PL_NEG          shift and go to state 11
-    LPAREN          shift and go to state 6
-    FOL_ALL         shift and go to state 7
-    FOL_EXIST       shift and go to state 8
-    PL_PREDVAR      shift and go to state 9
-
-    exp                            shift and go to state 29
 
 state 17
 
-    (18) term -> PL_VAR .
+    (19) term -> PL_VAR .
 
-    PL_VAR          reduce using rule 18 (term -> PL_VAR .)
-    PL_CONST        reduce using rule 18 (term -> PL_VAR .)
-    COMMA           reduce using rule 18 (term -> PL_VAR .)
-    PL_AND          reduce using rule 18 (term -> PL_VAR .)
-    PL_OR           reduce using rule 18 (term -> PL_VAR .)
-    PL_COND         reduce using rule 18 (term -> PL_VAR .)
-    PL_BICOND       reduce using rule 18 (term -> PL_VAR .)
-    $end            reduce using rule 18 (term -> PL_VAR .)
-    RPAREN          reduce using rule 18 (term -> PL_VAR .)
+    PL_VAR          reduce using rule 19 (term -> PL_VAR .)
+    PL_CONST        reduce using rule 19 (term -> PL_VAR .)
+    COMMA           reduce using rule 19 (term -> PL_VAR .)
+    PL_AND          reduce using rule 19 (term -> PL_VAR .)
+    PL_OR           reduce using rule 19 (term -> PL_VAR .)
+    PL_COND         reduce using rule 19 (term -> PL_VAR .)
+    PL_BICOND       reduce using rule 19 (term -> PL_VAR .)
+    $end            reduce using rule 19 (term -> PL_VAR .)
+    RPAREN          reduce using rule 19 (term -> PL_VAR .)
+    FOL_IDENTITY    reduce using rule 19 (term -> PL_VAR .)
 
 
 state 18
 
-    (19) term -> PL_CONST .
-
-    PL_VAR          reduce using rule 19 (term -> PL_CONST .)
-    PL_CONST        reduce using rule 19 (term -> PL_CONST .)
-    COMMA           reduce using rule 19 (term -> PL_CONST .)
-    PL_AND          reduce using rule 19 (term -> PL_CONST .)
-    PL_OR           reduce using rule 19 (term -> PL_CONST .)
-    PL_COND         reduce using rule 19 (term -> PL_CONST .)
-    PL_BICOND       reduce using rule 19 (term -> PL_CONST .)
-    $end            reduce using rule 19 (term -> PL_CONST .)
-    RPAREN          reduce using rule 19 (term -> PL_CONST .)
-
-
-state 19
-
-    (17) term_list -> term . term_list
-    (16) term_list -> .
-    (17) term_list -> . term term_list
-    (18) term -> . PL_VAR
-    (19) term -> . PL_CONST
-
-    COMMA           reduce using rule 16 (term_list -> .)
-    PL_AND          reduce using rule 16 (term_list -> .)
-    PL_OR           reduce using rule 16 (term_list -> .)
-    PL_COND         reduce using rule 16 (term_list -> .)
-    PL_BICOND       reduce using rule 16 (term_list -> .)
-    $end            reduce using rule 16 (term_list -> .)
-    RPAREN          reduce using rule 16 (term_list -> .)
-    PL_VAR          shift and go to state 17
-    PL_CONST        shift and go to state 18
-
-    term                           shift and go to state 19
-    term_list                      shift and go to state 30
-
-state 20
-
-    (15) exp -> PL_PREDVAR term_list .
-
-    PL_AND          reduce using rule 15 (exp -> PL_PREDVAR term_list .)
-    PL_OR           reduce using rule 15 (exp -> PL_PREDVAR term_list .)
-    PL_COND         reduce using rule 15 (exp -> PL_PREDVAR term_list .)
-    PL_BICOND       reduce using rule 15 (exp -> PL_PREDVAR term_list .)
-    COMMA           reduce using rule 15 (exp -> PL_PREDVAR term_list .)
-    $end            reduce using rule 15 (exp -> PL_PREDVAR term_list .)
-    RPAREN          reduce using rule 15 (exp -> PL_PREDVAR term_list .)
-
-
-state 21
-
-    (7) exp -> exp PL_AND . exp
+    (14) exp -> FOL_ALL PL_VAR . exp
     (7) exp -> . exp PL_AND exp
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
     LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
+    FOL_ALL         shift and go to state 7
+    FOL_EXIST       shift and go to state 8
+    PL_PREDVAR      shift and go to state 9
+
+    exp                            shift and go to state 30
+
+state 19
+
+    (15) exp -> FOL_EXIST PL_VAR . exp
+    (7) exp -> . exp PL_AND exp
+    (8) exp -> . exp PL_OR exp
+    (9) exp -> . exp PL_COND exp
+    (10) exp -> . exp PL_BICOND exp
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
+
+    LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
 
     exp                            shift and go to state 31
 
+state 20
+
+    (18) term_list -> term . term_list
+    (17) term_list -> .
+    (18) term_list -> . term term_list
+    (19) term -> . PL_VAR
+    (20) term -> . PL_CONST
+
+    COMMA           reduce using rule 17 (term_list -> .)
+    PL_AND          reduce using rule 17 (term_list -> .)
+    PL_OR           reduce using rule 17 (term_list -> .)
+    PL_COND         reduce using rule 17 (term_list -> .)
+    PL_BICOND       reduce using rule 17 (term_list -> .)
+    $end            reduce using rule 17 (term_list -> .)
+    RPAREN          reduce using rule 17 (term_list -> .)
+    PL_VAR          shift and go to state 17
+    PL_CONST        shift and go to state 15
+
+    term                           shift and go to state 20
+    term_list                      shift and go to state 32
+
+state 21
+
+    (16) exp -> PL_PREDVAR term_list .
+
+    COMMA           reduce using rule 16 (exp -> PL_PREDVAR term_list .)
+    PL_AND          reduce using rule 16 (exp -> PL_PREDVAR term_list .)
+    PL_OR           reduce using rule 16 (exp -> PL_PREDVAR term_list .)
+    PL_COND         reduce using rule 16 (exp -> PL_PREDVAR term_list .)
+    PL_BICOND       reduce using rule 16 (exp -> PL_PREDVAR term_list .)
+    $end            reduce using rule 16 (exp -> PL_PREDVAR term_list .)
+    RPAREN          reduce using rule 16 (exp -> PL_PREDVAR term_list .)
+
+
 state 22
+
+    (7) exp -> exp PL_AND . exp
+    (7) exp -> . exp PL_AND exp
+    (8) exp -> . exp PL_OR exp
+    (9) exp -> . exp PL_COND exp
+    (10) exp -> . exp PL_BICOND exp
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
+
+    LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
+    FOL_ALL         shift and go to state 7
+    FOL_EXIST       shift and go to state 8
+    PL_PREDVAR      shift and go to state 9
+
+    exp                            shift and go to state 33
+
+state 23
 
     (6) exp_list -> exp COMMA . exp_list
     (5) exp_list -> . exp
@@ -412,177 +437,192 @@ state 22
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
     LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
 
-    exp_list                       shift and go to state 32
+    exp_list                       shift and go to state 34
     exp                            shift and go to state 10
 
-state 23
+state 24
 
     (10) exp -> exp PL_BICOND . exp
     (7) exp -> . exp PL_AND exp
     (8) exp -> . exp PL_OR exp
     (9) exp -> . exp PL_COND exp
     (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
 
-    PL_NEG          shift and go to state 11
     LPAREN          shift and go to state 6
-    FOL_ALL         shift and go to state 7
-    FOL_EXIST       shift and go to state 8
-    PL_PREDVAR      shift and go to state 9
-
-    exp                            shift and go to state 33
-
-state 24
-
-    (9) exp -> exp PL_COND . exp
-    (7) exp -> . exp PL_AND exp
-    (8) exp -> . exp PL_OR exp
-    (9) exp -> . exp PL_COND exp
-    (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
-
     PL_NEG          shift and go to state 11
-    LPAREN          shift and go to state 6
-    FOL_ALL         shift and go to state 7
-    FOL_EXIST       shift and go to state 8
-    PL_PREDVAR      shift and go to state 9
-
-    exp                            shift and go to state 34
-
-state 25
-
-    (8) exp -> exp PL_OR . exp
-    (7) exp -> . exp PL_AND exp
-    (8) exp -> . exp PL_OR exp
-    (9) exp -> . exp PL_COND exp
-    (10) exp -> . exp PL_BICOND exp
-    (11) exp -> . PL_NEG exp
-    (12) exp -> . LPAREN exp RPAREN
-    (13) exp -> . FOL_ALL PL_VAR exp
-    (14) exp -> . FOL_EXIST PL_VAR exp
-    (15) exp -> . PL_PREDVAR term_list
-
-    PL_NEG          shift and go to state 11
-    LPAREN          shift and go to state 6
     FOL_ALL         shift and go to state 7
     FOL_EXIST       shift and go to state 8
     PL_PREDVAR      shift and go to state 9
 
     exp                            shift and go to state 35
 
+state 25
+
+    (9) exp -> exp PL_COND . exp
+    (7) exp -> . exp PL_AND exp
+    (8) exp -> . exp PL_OR exp
+    (9) exp -> . exp PL_COND exp
+    (10) exp -> . exp PL_BICOND exp
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
+
+    LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
+    FOL_ALL         shift and go to state 7
+    FOL_EXIST       shift and go to state 8
+    PL_PREDVAR      shift and go to state 9
+
+    exp                            shift and go to state 36
+
 state 26
 
-    (11) exp -> PL_NEG exp .
+    (8) exp -> exp PL_OR . exp
+    (7) exp -> . exp PL_AND exp
+    (8) exp -> . exp PL_OR exp
+    (9) exp -> . exp PL_COND exp
+    (10) exp -> . exp PL_BICOND exp
+    (11) exp -> . LPAREN term FOL_IDENTITY term RPAREN
+    (12) exp -> . PL_NEG exp
+    (13) exp -> . LPAREN exp RPAREN
+    (14) exp -> . FOL_ALL PL_VAR exp
+    (15) exp -> . FOL_EXIST PL_VAR exp
+    (16) exp -> . PL_PREDVAR term_list
+
+    LPAREN          shift and go to state 6
+    PL_NEG          shift and go to state 11
+    FOL_ALL         shift and go to state 7
+    FOL_EXIST       shift and go to state 8
+    PL_PREDVAR      shift and go to state 9
+
+    exp                            shift and go to state 37
+
+state 27
+
+    (12) exp -> PL_NEG exp .
     (7) exp -> exp . PL_AND exp
     (8) exp -> exp . PL_OR exp
     (9) exp -> exp . PL_COND exp
     (10) exp -> exp . PL_BICOND exp
 
-    PL_AND          reduce using rule 11 (exp -> PL_NEG exp .)
-    PL_OR           reduce using rule 11 (exp -> PL_NEG exp .)
-    PL_COND         reduce using rule 11 (exp -> PL_NEG exp .)
-    PL_BICOND       reduce using rule 11 (exp -> PL_NEG exp .)
-    COMMA           reduce using rule 11 (exp -> PL_NEG exp .)
-    $end            reduce using rule 11 (exp -> PL_NEG exp .)
-    RPAREN          reduce using rule 11 (exp -> PL_NEG exp .)
+    COMMA           reduce using rule 12 (exp -> PL_NEG exp .)
+    PL_AND          reduce using rule 12 (exp -> PL_NEG exp .)
+    PL_OR           reduce using rule 12 (exp -> PL_NEG exp .)
+    PL_COND         reduce using rule 12 (exp -> PL_NEG exp .)
+    PL_BICOND       reduce using rule 12 (exp -> PL_NEG exp .)
+    $end            reduce using rule 12 (exp -> PL_NEG exp .)
+    RPAREN          reduce using rule 12 (exp -> PL_NEG exp .)
 
-  ! PL_AND          [ shift and go to state 21 ]
-  ! PL_OR           [ shift and go to state 25 ]
-  ! PL_COND         [ shift and go to state 24 ]
-  ! PL_BICOND       [ shift and go to state 23 ]
-
-
-state 27
-
-    (12) exp -> LPAREN exp RPAREN .
-
-    PL_AND          reduce using rule 12 (exp -> LPAREN exp RPAREN .)
-    PL_OR           reduce using rule 12 (exp -> LPAREN exp RPAREN .)
-    PL_COND         reduce using rule 12 (exp -> LPAREN exp RPAREN .)
-    PL_BICOND       reduce using rule 12 (exp -> LPAREN exp RPAREN .)
-    COMMA           reduce using rule 12 (exp -> LPAREN exp RPAREN .)
-    $end            reduce using rule 12 (exp -> LPAREN exp RPAREN .)
-    RPAREN          reduce using rule 12 (exp -> LPAREN exp RPAREN .)
+  ! PL_AND          [ shift and go to state 22 ]
+  ! PL_OR           [ shift and go to state 26 ]
+  ! PL_COND         [ shift and go to state 25 ]
+  ! PL_BICOND       [ shift and go to state 24 ]
 
 
 state 28
 
-    (13) exp -> FOL_ALL PL_VAR exp .
-    (7) exp -> exp . PL_AND exp
-    (8) exp -> exp . PL_OR exp
-    (9) exp -> exp . PL_COND exp
-    (10) exp -> exp . PL_BICOND exp
+    (11) exp -> LPAREN term FOL_IDENTITY . term RPAREN
+    (19) term -> . PL_VAR
+    (20) term -> . PL_CONST
 
-    PL_AND          reduce using rule 13 (exp -> FOL_ALL PL_VAR exp .)
-    PL_OR           reduce using rule 13 (exp -> FOL_ALL PL_VAR exp .)
-    PL_COND         reduce using rule 13 (exp -> FOL_ALL PL_VAR exp .)
-    PL_BICOND       reduce using rule 13 (exp -> FOL_ALL PL_VAR exp .)
-    COMMA           reduce using rule 13 (exp -> FOL_ALL PL_VAR exp .)
-    $end            reduce using rule 13 (exp -> FOL_ALL PL_VAR exp .)
-    RPAREN          reduce using rule 13 (exp -> FOL_ALL PL_VAR exp .)
+    PL_VAR          shift and go to state 17
+    PL_CONST        shift and go to state 15
 
-  ! PL_AND          [ shift and go to state 21 ]
-  ! PL_OR           [ shift and go to state 25 ]
-  ! PL_COND         [ shift and go to state 24 ]
-  ! PL_BICOND       [ shift and go to state 23 ]
-
+    term                           shift and go to state 38
 
 state 29
 
-    (14) exp -> FOL_EXIST PL_VAR exp .
-    (7) exp -> exp . PL_AND exp
-    (8) exp -> exp . PL_OR exp
-    (9) exp -> exp . PL_COND exp
-    (10) exp -> exp . PL_BICOND exp
+    (13) exp -> LPAREN exp RPAREN .
 
-    PL_AND          reduce using rule 14 (exp -> FOL_EXIST PL_VAR exp .)
-    PL_OR           reduce using rule 14 (exp -> FOL_EXIST PL_VAR exp .)
-    PL_COND         reduce using rule 14 (exp -> FOL_EXIST PL_VAR exp .)
-    PL_BICOND       reduce using rule 14 (exp -> FOL_EXIST PL_VAR exp .)
-    COMMA           reduce using rule 14 (exp -> FOL_EXIST PL_VAR exp .)
-    $end            reduce using rule 14 (exp -> FOL_EXIST PL_VAR exp .)
-    RPAREN          reduce using rule 14 (exp -> FOL_EXIST PL_VAR exp .)
-
-  ! PL_AND          [ shift and go to state 21 ]
-  ! PL_OR           [ shift and go to state 25 ]
-  ! PL_COND         [ shift and go to state 24 ]
-  ! PL_BICOND       [ shift and go to state 23 ]
+    COMMA           reduce using rule 13 (exp -> LPAREN exp RPAREN .)
+    PL_AND          reduce using rule 13 (exp -> LPAREN exp RPAREN .)
+    PL_OR           reduce using rule 13 (exp -> LPAREN exp RPAREN .)
+    PL_COND         reduce using rule 13 (exp -> LPAREN exp RPAREN .)
+    PL_BICOND       reduce using rule 13 (exp -> LPAREN exp RPAREN .)
+    $end            reduce using rule 13 (exp -> LPAREN exp RPAREN .)
+    RPAREN          reduce using rule 13 (exp -> LPAREN exp RPAREN .)
 
 
 state 30
 
-    (17) term_list -> term term_list .
+    (14) exp -> FOL_ALL PL_VAR exp .
+    (7) exp -> exp . PL_AND exp
+    (8) exp -> exp . PL_OR exp
+    (9) exp -> exp . PL_COND exp
+    (10) exp -> exp . PL_BICOND exp
 
-    COMMA           reduce using rule 17 (term_list -> term term_list .)
-    PL_AND          reduce using rule 17 (term_list -> term term_list .)
-    PL_OR           reduce using rule 17 (term_list -> term term_list .)
-    PL_COND         reduce using rule 17 (term_list -> term term_list .)
-    PL_BICOND       reduce using rule 17 (term_list -> term term_list .)
-    $end            reduce using rule 17 (term_list -> term term_list .)
-    RPAREN          reduce using rule 17 (term_list -> term term_list .)
+    COMMA           reduce using rule 14 (exp -> FOL_ALL PL_VAR exp .)
+    PL_AND          reduce using rule 14 (exp -> FOL_ALL PL_VAR exp .)
+    PL_OR           reduce using rule 14 (exp -> FOL_ALL PL_VAR exp .)
+    PL_COND         reduce using rule 14 (exp -> FOL_ALL PL_VAR exp .)
+    PL_BICOND       reduce using rule 14 (exp -> FOL_ALL PL_VAR exp .)
+    $end            reduce using rule 14 (exp -> FOL_ALL PL_VAR exp .)
+    RPAREN          reduce using rule 14 (exp -> FOL_ALL PL_VAR exp .)
+
+  ! PL_AND          [ shift and go to state 22 ]
+  ! PL_OR           [ shift and go to state 26 ]
+  ! PL_COND         [ shift and go to state 25 ]
+  ! PL_BICOND       [ shift and go to state 24 ]
 
 
 state 31
+
+    (15) exp -> FOL_EXIST PL_VAR exp .
+    (7) exp -> exp . PL_AND exp
+    (8) exp -> exp . PL_OR exp
+    (9) exp -> exp . PL_COND exp
+    (10) exp -> exp . PL_BICOND exp
+
+    COMMA           reduce using rule 15 (exp -> FOL_EXIST PL_VAR exp .)
+    PL_AND          reduce using rule 15 (exp -> FOL_EXIST PL_VAR exp .)
+    PL_OR           reduce using rule 15 (exp -> FOL_EXIST PL_VAR exp .)
+    PL_COND         reduce using rule 15 (exp -> FOL_EXIST PL_VAR exp .)
+    PL_BICOND       reduce using rule 15 (exp -> FOL_EXIST PL_VAR exp .)
+    $end            reduce using rule 15 (exp -> FOL_EXIST PL_VAR exp .)
+    RPAREN          reduce using rule 15 (exp -> FOL_EXIST PL_VAR exp .)
+
+  ! PL_AND          [ shift and go to state 22 ]
+  ! PL_OR           [ shift and go to state 26 ]
+  ! PL_COND         [ shift and go to state 25 ]
+  ! PL_BICOND       [ shift and go to state 24 ]
+
+
+state 32
+
+    (18) term_list -> term term_list .
+
+    COMMA           reduce using rule 18 (term_list -> term term_list .)
+    PL_AND          reduce using rule 18 (term_list -> term term_list .)
+    PL_OR           reduce using rule 18 (term_list -> term term_list .)
+    PL_COND         reduce using rule 18 (term_list -> term term_list .)
+    PL_BICOND       reduce using rule 18 (term_list -> term term_list .)
+    $end            reduce using rule 18 (term_list -> term term_list .)
+    RPAREN          reduce using rule 18 (term_list -> term term_list .)
+
+
+state 33
 
     (7) exp -> exp PL_AND exp .
     (7) exp -> exp . PL_AND exp
@@ -590,28 +630,28 @@ state 31
     (9) exp -> exp . PL_COND exp
     (10) exp -> exp . PL_BICOND exp
 
+    COMMA           reduce using rule 7 (exp -> exp PL_AND exp .)
     PL_AND          reduce using rule 7 (exp -> exp PL_AND exp .)
     PL_OR           reduce using rule 7 (exp -> exp PL_AND exp .)
-    COMMA           reduce using rule 7 (exp -> exp PL_AND exp .)
     $end            reduce using rule 7 (exp -> exp PL_AND exp .)
     RPAREN          reduce using rule 7 (exp -> exp PL_AND exp .)
-    PL_COND         shift and go to state 24
-    PL_BICOND       shift and go to state 23
+    PL_COND         shift and go to state 25
+    PL_BICOND       shift and go to state 24
 
   ! PL_COND         [ reduce using rule 7 (exp -> exp PL_AND exp .) ]
   ! PL_BICOND       [ reduce using rule 7 (exp -> exp PL_AND exp .) ]
-  ! PL_AND          [ shift and go to state 21 ]
-  ! PL_OR           [ shift and go to state 25 ]
+  ! PL_AND          [ shift and go to state 22 ]
+  ! PL_OR           [ shift and go to state 26 ]
 
 
-state 32
+state 34
 
     (6) exp_list -> exp COMMA exp_list .
 
     $end            reduce using rule 6 (exp_list -> exp COMMA exp_list .)
 
 
-state 33
+state 35
 
     (10) exp -> exp PL_BICOND exp .
     (7) exp -> exp . PL_AND exp
@@ -619,21 +659,21 @@ state 33
     (9) exp -> exp . PL_COND exp
     (10) exp -> exp . PL_BICOND exp
 
+    COMMA           reduce using rule 10 (exp -> exp PL_BICOND exp .)
     PL_AND          reduce using rule 10 (exp -> exp PL_BICOND exp .)
     PL_OR           reduce using rule 10 (exp -> exp PL_BICOND exp .)
     PL_COND         reduce using rule 10 (exp -> exp PL_BICOND exp .)
     PL_BICOND       reduce using rule 10 (exp -> exp PL_BICOND exp .)
-    COMMA           reduce using rule 10 (exp -> exp PL_BICOND exp .)
     $end            reduce using rule 10 (exp -> exp PL_BICOND exp .)
     RPAREN          reduce using rule 10 (exp -> exp PL_BICOND exp .)
 
-  ! PL_AND          [ shift and go to state 21 ]
-  ! PL_OR           [ shift and go to state 25 ]
-  ! PL_COND         [ shift and go to state 24 ]
-  ! PL_BICOND       [ shift and go to state 23 ]
+  ! PL_AND          [ shift and go to state 22 ]
+  ! PL_OR           [ shift and go to state 26 ]
+  ! PL_COND         [ shift and go to state 25 ]
+  ! PL_BICOND       [ shift and go to state 24 ]
 
 
-state 34
+state 36
 
     (9) exp -> exp PL_COND exp .
     (7) exp -> exp . PL_AND exp
@@ -641,21 +681,21 @@ state 34
     (9) exp -> exp . PL_COND exp
     (10) exp -> exp . PL_BICOND exp
 
+    COMMA           reduce using rule 9 (exp -> exp PL_COND exp .)
     PL_AND          reduce using rule 9 (exp -> exp PL_COND exp .)
     PL_OR           reduce using rule 9 (exp -> exp PL_COND exp .)
     PL_COND         reduce using rule 9 (exp -> exp PL_COND exp .)
     PL_BICOND       reduce using rule 9 (exp -> exp PL_COND exp .)
-    COMMA           reduce using rule 9 (exp -> exp PL_COND exp .)
     $end            reduce using rule 9 (exp -> exp PL_COND exp .)
     RPAREN          reduce using rule 9 (exp -> exp PL_COND exp .)
 
-  ! PL_AND          [ shift and go to state 21 ]
-  ! PL_OR           [ shift and go to state 25 ]
-  ! PL_COND         [ shift and go to state 24 ]
-  ! PL_BICOND       [ shift and go to state 23 ]
+  ! PL_AND          [ shift and go to state 22 ]
+  ! PL_OR           [ shift and go to state 26 ]
+  ! PL_COND         [ shift and go to state 25 ]
+  ! PL_BICOND       [ shift and go to state 24 ]
 
 
-state 35
+state 37
 
     (8) exp -> exp PL_OR exp .
     (7) exp -> exp . PL_AND exp
@@ -663,16 +703,36 @@ state 35
     (9) exp -> exp . PL_COND exp
     (10) exp -> exp . PL_BICOND exp
 
+    COMMA           reduce using rule 8 (exp -> exp PL_OR exp .)
     PL_AND          reduce using rule 8 (exp -> exp PL_OR exp .)
     PL_OR           reduce using rule 8 (exp -> exp PL_OR exp .)
-    COMMA           reduce using rule 8 (exp -> exp PL_OR exp .)
     $end            reduce using rule 8 (exp -> exp PL_OR exp .)
     RPAREN          reduce using rule 8 (exp -> exp PL_OR exp .)
-    PL_COND         shift and go to state 24
-    PL_BICOND       shift and go to state 23
+    PL_COND         shift and go to state 25
+    PL_BICOND       shift and go to state 24
 
   ! PL_COND         [ reduce using rule 8 (exp -> exp PL_OR exp .) ]
   ! PL_BICOND       [ reduce using rule 8 (exp -> exp PL_OR exp .) ]
-  ! PL_AND          [ shift and go to state 21 ]
-  ! PL_OR           [ shift and go to state 25 ]
+  ! PL_AND          [ shift and go to state 22 ]
+  ! PL_OR           [ shift and go to state 26 ]
+
+
+state 38
+
+    (11) exp -> LPAREN term FOL_IDENTITY term . RPAREN
+
+    RPAREN          shift and go to state 39
+
+
+state 39
+
+    (11) exp -> LPAREN term FOL_IDENTITY term RPAREN .
+
+    COMMA           reduce using rule 11 (exp -> LPAREN term FOL_IDENTITY term RPAREN .)
+    PL_AND          reduce using rule 11 (exp -> LPAREN term FOL_IDENTITY term RPAREN .)
+    PL_OR           reduce using rule 11 (exp -> LPAREN term FOL_IDENTITY term RPAREN .)
+    PL_COND         reduce using rule 11 (exp -> LPAREN term FOL_IDENTITY term RPAREN .)
+    PL_BICOND       reduce using rule 11 (exp -> LPAREN term FOL_IDENTITY term RPAREN .)
+    $end            reduce using rule 11 (exp -> LPAREN term FOL_IDENTITY term RPAREN .)
+    RPAREN          reduce using rule 11 (exp -> LPAREN term FOL_IDENTITY term RPAREN .)
 

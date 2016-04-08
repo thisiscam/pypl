@@ -266,6 +266,19 @@ class PL_Bicond_Exp(PL_Bin_Exp):
 		else:
 			return (0, "notiff", 0) #TODO: what should it be in this case?
 
+class FOL_Identity_Exp(PL_Exp):
+	def __init__(self, lterm, rterm):
+		self.lterm = lterm
+		self.rterm = rterm
+	def __str__(self):
+		return "(" + str(self.lterm) + "=" + str(self.rterm) + ")"
+	def latex_str(self):
+		return "(" + self.lterm.latex_str() + "=" + self.rterm.latex_str() + ")"
+	def fol_seman_gen(self, g, tf):
+		yield "\\M{0}\\m_{{{1}}}{2}".format(tf_to_not(tf), g_map_str(g), self.latex_str())
+		for lgen, rgen in zip(self.lterm.fol_term_gen(g), self.rterm.fol_term_gen(g)):
+			yield "{0}\\tidto {1}".format(lgen, rgen)
+
 class FOL_Quantifier_Exp(PL_Exp):
 	def __init__(self, var_name, scoped_exp):
 		self.var_name = var_name
@@ -341,6 +354,7 @@ tokens = (
 	'PL_NEG',
 	'PL_COND',
 	'PL_BICOND',
+	'FOL_IDENTITY',
 	'PL_PREDVAR',
 	'PL_VAR',
 	'PL_CONST',
@@ -356,6 +370,7 @@ tokens = (
  
 t_PL_COND = r'->|\\supset'
 t_PL_BICOND = r'<->|==|\\leftrightarrow'
+t_FOL_IDENTITY = r'='
 t_PL_PREDVAR = r'[A-Z]'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
@@ -395,7 +410,7 @@ def t_PL_VAR(t):
 	return t
 def t_PL_CONST(t):
 	r'[a-v][0-9]*'
-	t.value = FOL_Var(t.value)
+	t.value = FOL_Const(t.value)
 	return t
 
 # Define a rule so we can track line numbers
@@ -455,6 +470,10 @@ def p_exp_cond(p):
 def p_exp_bicond(p):
 	"""exp : exp PL_BICOND exp"""
 	p[0] = PL_Bicond_Exp(p[1], p[3])
+
+def p_exp_indentity(p):
+	"""exp : LPAREN term FOL_IDENTITY term RPAREN"""
+	p[0] = FOL_Identity_Exp(p[2], p[4])
 
 def p_exp_neg(p):
 	"""exp : PL_NEG exp"""
