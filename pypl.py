@@ -277,7 +277,7 @@ class FOL_Identity_Exp(PL_Exp):
 	def fol_seman_gen(self, g, tf):
 		yield "\\M{0}\\m_{{{1}}}{2}".format(tf_to_not(tf), g_map_str(g), self.latex_str())
 		for lgen, rgen in zip(self.lterm.fol_term_gen(g), self.rterm.fol_term_gen(g)):
-			yield "{0}\\tidto {1}".format(lgen, rgen)
+			yield "{0}\\tid {1}".format(lgen, rgen)
 
 class FOL_Quantifier_Exp(PL_Exp):
 	def __init__(self, var_name, scoped_exp):
